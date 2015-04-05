@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="it.cosenonjaviste.introtoretrofitrxjava" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:name=".App">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".Activity01SingleCall" />
+        <activity android:name=".Activity02MultipleCalls" />
+        <activity android:name=".Activity03Callbacks" />
+        <activity android:name=".Activity04Rx" />
+        <activity android:name=".Activity05RxMultipleCalls" />
+    </application>
+
+</manifest>

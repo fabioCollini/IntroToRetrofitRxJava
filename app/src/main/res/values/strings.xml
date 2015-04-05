@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">IntroToRetrofitRxJava</string>
+    <string name="error_loading">Error loading data</string>
+    <string name="reload">Reload</string>
+</resources>
