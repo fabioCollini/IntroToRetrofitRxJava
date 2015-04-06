@@ -26,11 +26,11 @@ public class Main {
     }
 
 
-private static GitHubService createService() {
-    RestAdapter restAdapter = new RestAdapter.Builder()
-            .setEndpoint("https://api.github.com/")
-            .build();
-    restAdapter.setLogLevel(RestAdapter.LogLevel.BASIC);
-    return restAdapter.create(GitHubService.class);
-}
+    private static GitHubService createService() {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("https://api.github.com/")
+                .build();
+        restAdapter.setLogLevel(RestAdapter.LogLevel.BASIC);
+        return restAdapter.create(GitHubService.class);
+    }
 }

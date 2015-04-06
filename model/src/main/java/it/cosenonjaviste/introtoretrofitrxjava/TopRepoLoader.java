@@ -20,11 +20,6 @@ public class TopRepoLoader {
     }
 
     public Observable<RepoStats> load(int limit) {
-service.listLastRepos()
-    .subscribe(
-            repoResponse -> System.out.println(repoResponse.getItems()),
-            Throwable::printStackTrace
-    );
         return service.listLastRepos()
                 .flatMapIterable(RepoResponse::getItems)
                 .limit(limit)

@@ -3,7 +3,6 @@ package it.cosenonjaviste.introtoretrofitrxjava;
 import java.util.List;
 import java.util.Map;
 
-import it.cosenonjaviste.introtoretrofitrxjava.model.RepoResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.RepoStats;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import retrofit.Callback;
@@ -29,15 +28,6 @@ public class TopRepoLoaderCallback {
 //    }
 
     private void loadRepoStats(String login, String repoName, Callback<RepoStats> callback) {
-service.listLastRepos(new Callback<RepoResponse>() {
-    @Override public void success(RepoResponse repoResponse, Response response) {
-        System.out.println(repoResponse.getItems());
-    }
-
-    @Override public void failure(RetrofitError error) {
-        error.printStackTrace();
-    }
-});
         service.listContributors(login, repoName, new Callback<List<User>>() {
             @Override public void success(List<User> contributors, Response response) {
                 service.listLanguages(login, repoName, new Callback<Map<String, String>>() {

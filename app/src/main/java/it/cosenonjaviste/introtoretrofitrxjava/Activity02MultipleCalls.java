@@ -34,10 +34,12 @@ public class Activity02MultipleCalls extends BaseActivity<RepoStats, GitHubServi
         List<RepoStats> statsList = new ArrayList<>();
         for (Repo repo : items) {
             String login = repo.getOwner().getLogin();
-            String repoName = repo.getName();
-            List<User> contributors = service.listContributors(login, repoName);
-            Set<String> languages = service.listLanguages(login, repoName).keySet();
-            statsList.add(new RepoStats(repoName, contributors, languages));
+            String name = repo.getName();
+            List<User> contributors =
+                    service.listContributors(login, name);
+            Set<String> languages =
+                    service.listLanguages(login, name).keySet();
+            statsList.add(new RepoStats(name, contributors, languages));
         }
         return statsList;
     }
