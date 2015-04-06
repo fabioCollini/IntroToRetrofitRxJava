@@ -16,6 +16,6 @@ author:
         #name: Famous Inc.
         # url:  http://example.com/
 
-fork_url: https://github.com/shower/shower
-progress: true
+#fork_url: https://github.com/shower/shower
+progress: false
 line_numbers: true

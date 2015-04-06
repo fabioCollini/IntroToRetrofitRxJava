@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width={% if width %}{{ width }}{% else %}792{% endif %}, user-scalable=no">
     <link rel="stylesheet" href="themes/{{ theme }}/styles/screen.css">
+    <link rel="stylesheet" href="highlight/styles/idea.css">
     {% if page.style %}<style>
 {{ page.style }}</style>{%endif%}
 </head>
@@ -19,6 +20,10 @@
     {% if fork_url != '' %}<p class="badge"><a href="{{ fork_url }}">Fork me on Github</a></p>{% endif %}
     {% if progress %}<div class="progress"><div></div></div>{% endif %}
     <script src="shower/shower.min.js"></script>
+
+    <script src="/highlight/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
     <!-- Copyright © {{ site.time | date: "%Y" }} {{ author_name }}{% if author_url != '' %} — {{ author_url }}{% endif %}{% if company_name != '' %}, {{ company_name }}{% if company_url != '' %} — {{ company_url }}{% endif %}{% endif %} -->
 </body>
 </html>
