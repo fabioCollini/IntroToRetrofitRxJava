@@ -1,27 +1,49 @@
 package it.cosenonjaviste.introtoretrofitrxjava.model;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.text.MessageFormat;
+
 public class User {
-    private long id;
 
-    private String login;
+    @SerializedName("user_id")
+    private int id;
 
-    public User() {
-    }
+    private int reputation;
 
-    public User(long id, String login) {
-        this.id = id;
-        this.login = login;
-    }
+    @SerializedName("display_name")
+    private String name;
 
-    public long getId() {
+    private String location;
+
+    @SerializedName("profile_image")
+    private String image;
+
+    public int getId() {
         return id;
     }
 
-    public String getLogin() {
-        return login;
+    public int getReputation() {
+        return reputation;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     @Override public String toString() {
-        return login;
+        if (location == null) {
+            return MessageFormat.format("<b>{0}</b> {1}", name, reputation);
+        } else {
+            return MessageFormat.format("<b>{0}</b> {1}<br/>{2}", name, reputation, location);
+        }
     }
 }

@@ -1,29 +1,38 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
-import android.widget.Toast;
+import android.os.AsyncTask;
 
 import java.util.List;
 
-import it.cosenonjaviste.introtoretrofitrxjava.model.Repo;
+import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 
-public class Activity01SingleCall extends BaseActivity<Repo, GitHubServiceSync> {
-
-    @Override protected Class<GitHubServiceSync> getServiceClass() {
-        return GitHubServiceSync.class;
-    }
+public class Activity01SingleCall extends BaseActivity {
 
     @Override protected void loadItems() {
-        new Thread(() -> {
-            try {
-                List<Repo> items = loadItemsSync();
-                runOnUiThread(() -> adapter.addAll(items));
-            } catch (Exception e) {
-                runOnUiThread(() -> Toast.makeText(this, R.string.error_loading, Toast.LENGTH_LONG).show());
+        new AsyncTask<Void, Void, List<User>>() {
+            @Override protected List<User> doInBackground(Void... params) {
+                try {
+                    return loadItemsSync();
+                } catch (Exception e) {
+                    return null;
+                }
             }
-        }).start();
+
+            @Override protected void onPostExecute(List<User> users) {
+                if (users != null) {
+                    adapter.addAll(users);
+                } else {
+                    showError();
+                }
+            }
+        }.execute();
     }
 
-    private List<Repo> loadItemsSync() {
-        return service.listLastRepos().getItems();
+    private List<User> loadItemsSync() {
+        List<User> users = service.getTopUsersSync().getItems();
+        if (users.size() > 5) {
+            users = users.subList(0, 5);
+        }
+        return users;
     }
 }

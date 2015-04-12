@@ -1,45 +1,49 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
-import android.widget.Toast;
+import android.os.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import it.cosenonjaviste.introtoretrofitrxjava.model.Repo;
-import it.cosenonjaviste.introtoretrofitrxjava.model.RepoResponse;
-import it.cosenonjaviste.introtoretrofitrxjava.model.RepoStats;
+import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
+import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
+import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 
-public class Activity02MultipleCalls extends BaseActivity<RepoStats, GitHubServiceSync> {
-
-    @Override protected Class<GitHubServiceSync> getServiceClass() {
-        return GitHubServiceSync.class;
-    }
+public class Activity02MultipleCalls extends BaseActivity {
 
     @Override protected void loadItems() {
-        new Thread(() -> {
-            try {
-                List<RepoStats> items = loadItemsSync();
-                runOnUiThread(() -> adapter.addAll(items));
-            } catch (Exception e) {
-                runOnUiThread(() -> Toast.makeText(this, R.string.error_loading, Toast.LENGTH_LONG).show());
+
+        new AsyncTask<Void, Void, List<UserStats>>() {
+            @Override protected List<UserStats> doInBackground(Void... params) {
+                try {
+                    return loadItemsSync();
+                } catch (Exception e) {
+                    return null;
+                }
             }
-        }).start();
+
+            @Override protected void onPostExecute(List<UserStats> users) {
+                if (users != null) {
+                    adapter.addAll(users);
+                } else {
+                    showError();
+                }
+            }
+        }.execute();
     }
 
-    private List<RepoStats> loadItemsSync() {
-        RepoResponse repoResponse = service.listLastRepos();
-        List<Repo> items = repoResponse.getItems();
-        List<RepoStats> statsList = new ArrayList<>();
-        for (Repo repo : items) {
-            String login = repo.getOwner().getLogin();
-            String name = repo.getName();
-            List<User> contributors =
-                    service.listContributors(login, name);
-            Set<String> languages =
-                    service.listLanguages(login, name).keySet();
-            statsList.add(new RepoStats(name, contributors, languages));
+    private List<UserStats> loadItemsSync() {
+        List<User> users = service.getTopUsersSync().getItems();
+        if (users.size() > 5) {
+            users = users.subList(0, 5);
+        }
+        List<UserStats> statsList = new ArrayList<>();
+        for (User user : users) {
+            TagResponse tags = service.getTagsSync(user.getId());
+            BadgeResponse badges = service.getBadgesSync(user.getId());
+
+            statsList.add(new UserStats(user, tags.getItems(), badges.getItems()));
         }
         return statsList;
     }

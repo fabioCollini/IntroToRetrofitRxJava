@@ -1,19 +1,15 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
-import it.cosenonjaviste.introtoretrofitrxjava.model.Repo;
-import it.cosenonjaviste.introtoretrofitrxjava.model.RepoResponse;
+import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Activity04Rx extends BaseActivity<Repo, GitHubService> {
-
-    @Override protected Class<GitHubService> getServiceClass() {
-        return GitHubService.class;
-    }
+public class Activity04Rx extends BaseActivity {
 
     protected void loadItems() {
-        service.listLastRepos()
-                .map(RepoResponse::getItems)
+        service.getTopUsers()
+                .map(UserResponse::getItems)
+                .limit(5)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(adapter::addAll, t -> showError());
