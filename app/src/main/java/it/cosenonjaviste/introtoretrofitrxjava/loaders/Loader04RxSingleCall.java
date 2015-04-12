@@ -1,4 +1,4 @@
-package it.cosenonjaviste.introtoretrofitrxjava;
+package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -9,7 +9,7 @@ import rx.schedulers.Schedulers;
 
 public class Loader04RxSingleCall extends DataLoader {
 
-    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers()
                 .map(UserResponse::getItems)
                 .map(users -> {

@@ -1,4 +1,4 @@
-package it.cosenonjaviste.introtoretrofitrxjava;
+package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -12,23 +12,25 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Loader07RxZip extends DataLoader {
+public class Loader05RxFlatMap extends DataLoader {
 
-    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers()
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
-                .concatMap(this::loadRepoStats)
+                .flatMap(this::loadRepoStats)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::add, t -> showError(context));
+                .subscribe(adapter::addAll, t -> showError(context));
     }
 
     private Observable<UserStats> loadRepoStats(User user) {
-        return Observable.zip(
-                service.getTags(user.getId()).map(TagResponse::getItems),
-                service.getBadges(user.getId()).map(BadgeResponse::getItems),
-                (tags, badges) -> new UserStats(user, tags, badges)
-        );
+        return service.getTags(user.getId())
+                .map(TagResponse::getItems)
+                .flatMap(tags ->
+                                service.getBadges(user.getId())
+                                        .map(BadgeResponse::getItems)
+                                        .map(badges -> new UserStats(user, tags, badges))
+                );
     }
 }

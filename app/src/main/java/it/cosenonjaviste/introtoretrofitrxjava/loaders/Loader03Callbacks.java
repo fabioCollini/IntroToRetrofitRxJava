@@ -1,4 +1,4 @@
-package it.cosenonjaviste.introtoretrofitrxjava;
+package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -13,7 +13,7 @@ import retrofit.client.Response;
 
 public class Loader03Callbacks extends DataLoader {
 
-    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers(new Callback<UserResponse>() {
             @Override public void success(UserResponse repoResponse, Response response) {
                 List<User> users = repoResponse.getItems();

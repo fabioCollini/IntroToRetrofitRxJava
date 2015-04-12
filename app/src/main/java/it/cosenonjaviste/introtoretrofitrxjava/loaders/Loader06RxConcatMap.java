@@ -1,4 +1,4 @@
-package it.cosenonjaviste.introtoretrofitrxjava;
+package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -12,16 +12,16 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Loader05RxFlatMap extends DataLoader {
+public class Loader06RxConcatMap extends DataLoader {
 
-    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers()
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
                 .flatMap(this::loadRepoStats)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::addAll, t -> showError(context));
+                .subscribe(adapter::add, t -> showError(context));
     }
 
     private Observable<UserStats> loadRepoStats(User user) {

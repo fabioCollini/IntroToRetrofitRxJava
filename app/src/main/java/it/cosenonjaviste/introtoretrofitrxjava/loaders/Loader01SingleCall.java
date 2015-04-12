@@ -1,4 +1,4 @@
-package it.cosenonjaviste.introtoretrofitrxjava;
+package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -10,7 +10,7 @@ import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 
 public class Loader01SingleCall extends DataLoader {
 
-    @Override protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    @Override public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         new AsyncTask<Void, Void, List<User>>() {
             @Override protected List<User> doInBackground(Void... params) {
                 try {

@@ -32,5 +32,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.3.0'
     compile 'com.facebook.stetho:stetho:1.1.0'
     compile 'com.facebook.stetho:stetho-okhttp:1.1.0'
-    compile project(':model')
+    compile 'io.reactivex:rxandroid-framework:0.24.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
 }

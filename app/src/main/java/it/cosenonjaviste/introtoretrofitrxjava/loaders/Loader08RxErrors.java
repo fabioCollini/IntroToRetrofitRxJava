@@ -1,4 +1,4 @@
-package it.cosenonjaviste.introtoretrofitrxjava;
+package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
@@ -19,7 +19,7 @@ public class Loader08RxErrors extends DataLoader {
 
     private List<UserStats> cache;
 
-    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers()
                 .retry(3)
                 .flatMapIterable(UserResponse::getItems)

@@ -13,6 +13,16 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.DataLoader;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader01SingleCall;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader02MultipleCalls;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader03Callbacks;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader04RxSingleCall;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader05RxFlatMap;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader06RxConcatMap;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader07RxZip;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader08RxErrors;
+
 
 public class MainActivity extends ActionBarActivity {
 

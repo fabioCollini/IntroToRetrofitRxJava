@@ -1,8 +1,12 @@
-package it.cosenonjaviste.introtoretrofitrxjava;
+package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
+import it.cosenonjaviste.introtoretrofitrxjava.R;
+import it.cosenonjaviste.introtoretrofitrxjava.ServiceFactory;
+import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 
 public abstract class DataLoader {
 
@@ -12,7 +16,7 @@ public abstract class DataLoader {
         service = ServiceFactory.createService(StackOverflowService.class);
     }
 
-    protected abstract void loadItems(ArrayAdapter<Object> adapter, Context context);
+    public abstract void loadItems(ArrayAdapter<Object> adapter, Context context);
 
     protected void showError(Context context) {
         Toast.makeText(context, R.string.error_loading, Toast.LENGTH_LONG).show();
