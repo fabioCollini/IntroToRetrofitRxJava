@@ -1,6 +1,8 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +12,9 @@ import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 
-public class Activity02MultipleCalls extends BaseActivity {
+public class Loader02MultipleCalls extends DataLoader {
 
-    @Override protected void loadItems() {
+    @Override protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
 
         new AsyncTask<Void, Void, List<UserStats>>() {
             @Override protected List<UserStats> doInBackground(Void... params) {
@@ -27,7 +29,7 @@ public class Activity02MultipleCalls extends BaseActivity {
                 if (users != null) {
                     adapter.addAll(users);
                 } else {
-                    showError();
+                    showError(context);
                 }
             }
         }.execute();

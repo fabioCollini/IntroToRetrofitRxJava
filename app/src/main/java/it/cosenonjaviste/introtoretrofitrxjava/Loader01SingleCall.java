@@ -1,14 +1,16 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.ArrayAdapter;
 
 import java.util.List;
 
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 
-public class Activity01SingleCall extends BaseActivity {
+public class Loader01SingleCall extends DataLoader {
 
-    @Override protected void loadItems() {
+    @Override protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
         new AsyncTask<Void, Void, List<User>>() {
             @Override protected List<User> doInBackground(Void... params) {
                 try {
@@ -22,7 +24,7 @@ public class Activity01SingleCall extends BaseActivity {
                 if (users != null) {
                     adapter.addAll(users);
                 } else {
-                    showError();
+                    showError(context);
                 }
             }
         }.execute();

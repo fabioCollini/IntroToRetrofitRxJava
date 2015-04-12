@@ -1,12 +1,15 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
+import android.content.Context;
+import android.widget.ArrayAdapter;
+
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Activity04Rx extends BaseActivity {
+public class Loader04RxSingleCall extends DataLoader {
 
-    protected void loadItems() {
+    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers()
                 .map(UserResponse::getItems)
                 .map(users -> {
@@ -18,6 +21,6 @@ public class Activity04Rx extends BaseActivity {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::addAll, t -> showError());
+                .subscribe(adapter::addAll, t -> showError(context));
     }
 }

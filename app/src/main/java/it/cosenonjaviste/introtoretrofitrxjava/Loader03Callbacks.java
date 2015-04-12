@@ -1,5 +1,8 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
+import android.content.Context;
+import android.widget.ArrayAdapter;
+
 import java.util.List;
 
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
@@ -8,9 +11,9 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class Activity03Callbacks extends BaseActivity {
+public class Loader03Callbacks extends DataLoader {
 
-    protected void loadItems() {
+    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers(new Callback<UserResponse>() {
             @Override public void success(UserResponse repoResponse, Response response) {
                 List<User> users = repoResponse.getItems();
@@ -21,7 +24,7 @@ public class Activity03Callbacks extends BaseActivity {
             }
 
             @Override public void failure(RetrofitError error) {
-                showError();
+                showError(context);
             }
         });
     }

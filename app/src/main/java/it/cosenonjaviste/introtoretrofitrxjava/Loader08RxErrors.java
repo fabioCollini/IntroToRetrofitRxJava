@@ -1,5 +1,8 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
+import android.content.Context;
+import android.widget.ArrayAdapter;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -12,11 +15,11 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Activity08RxErrors extends BaseActivity {
+public class Loader08RxErrors extends DataLoader {
 
     private List<UserStats> cache;
 
-    protected void loadItems() {
+    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers()
                 .retry(3)
                 .flatMapIterable(UserResponse::getItems)
@@ -29,7 +32,7 @@ public class Activity08RxErrors extends BaseActivity {
                 .retry(2)
                 .doOnNext(this::saveOnCache)
                 .onErrorResumeNext(this::loadFromCache)
-                .subscribe(adapter::addAll, t -> showError());
+                .subscribe(adapter::addAll, t -> showError(context));
     }
 
     private void saveOnCache(List<UserStats> users) {

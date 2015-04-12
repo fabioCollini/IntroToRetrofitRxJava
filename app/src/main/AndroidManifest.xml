@@ -19,15 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".Activity01SingleCall" />
-        <activity android:name=".Activity02MultipleCalls" />
-        <activity android:name=".Activity03Callbacks" />
-        <activity android:name=".Activity04Rx" />
-        <activity android:name=".Activity05RxFlatMap" />
-        <activity android:name=".Activity06RxConcatMap" />
-        <activity android:name=".Activity07RxZip" />
-        <activity android:name=".Activity08RxErrors" />
     </application>
 
 </manifest>

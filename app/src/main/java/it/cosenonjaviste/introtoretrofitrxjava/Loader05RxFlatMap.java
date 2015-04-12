@@ -1,5 +1,8 @@
 package it.cosenonjaviste.introtoretrofitrxjava;
 
+import android.content.Context;
+import android.widget.ArrayAdapter;
+
 import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
@@ -9,16 +12,16 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Activity05RxFlatMap extends BaseActivity {
+public class Loader05RxFlatMap extends DataLoader {
 
-    protected void loadItems() {
+    protected void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers()
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
                 .flatMap(this::loadRepoStats)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::addAll, t -> showError());
+                .subscribe(adapter::addAll, t -> showError(context));
     }
 
     private Observable<UserStats> loadRepoStats(User user) {
