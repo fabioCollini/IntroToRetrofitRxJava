@@ -9,7 +9,13 @@ public class Activity04Rx extends BaseActivity {
     protected void loadItems() {
         service.getTopUsers()
                 .map(UserResponse::getItems)
-                .limit(5)
+                .map(users -> {
+                    if (users.size() > 5) {
+                        return users.subList(0, 5);
+                    } else {
+                        return users;
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(adapter::addAll, t -> showError());

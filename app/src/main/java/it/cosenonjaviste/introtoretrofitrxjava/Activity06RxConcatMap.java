@@ -9,23 +9,25 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class Activity05RxMultipleCalls extends BaseActivity {
+public class Activity06RxConcatMap extends BaseActivity {
 
     protected void loadItems() {
         service.getTopUsers()
-                .limit(5)
                 .flatMapIterable(UserResponse::getItems)
+                .limit(5)
                 .flatMap(this::loadRepoStats)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::addAll, t -> showError());
+                .subscribe(adapter::add, t -> showError());
     }
 
     private Observable<UserStats> loadRepoStats(User user) {
-        return Observable.zip(
-                service.getTags(user.getId()).map(TagResponse::getItems),
-                service.getBadges(user.getId()).map(BadgeResponse::getItems),
-                (tags, badges) -> new UserStats(user, tags, badges)
-        );
+        return service.getTags(user.getId())
+                .map(TagResponse::getItems)
+                .flatMap(tags ->
+                                service.getBadges(user.getId())
+                                        .map(BadgeResponse::getItems)
+                                        .map(badges -> new UserStats(user, tags, badges))
+                );
     }
 }

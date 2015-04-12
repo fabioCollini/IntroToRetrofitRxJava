@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +24,10 @@ public class MainActivity extends ActionBarActivity {
                 Activity02MultipleCalls.class,
                 Activity03Callbacks.class,
                 Activity04Rx.class,
-                Activity05RxMultipleCalls.class
+                Activity05RxFlatMap.class,
+                Activity06RxConcatMap.class,
+                Activity07RxZip.class,
+                Activity08RxErrors.class
         );
         listView.setAdapter(new ArrayAdapter<Class<?>>(this, android.R.layout.simple_list_item_1, classes) {
             @Override public View getView(int position, View convertView, ViewGroup parent) {
@@ -34,11 +36,9 @@ public class MainActivity extends ActionBarActivity {
                 return view;
             }
         });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Class<?> c = classes.get(position);
-                startActivity(new Intent(MainActivity.this, c));
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Class<?> c = classes.get(position);
+            startActivity(new Intent(MainActivity.this, c));
         });
         setContentView(listView);
     }
