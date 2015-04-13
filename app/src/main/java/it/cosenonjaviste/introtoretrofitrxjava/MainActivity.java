@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -22,6 +23,9 @@ import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader05RxFlatMap;
 import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader06RxConcatMap;
 import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader07RxZip;
 import it.cosenonjaviste.introtoretrofitrxjava.loaders.Loader08RxErrors;
+import it.cosenonjaviste.introtoretrofitrxjava.loaders.RxDataLoader;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -32,15 +36,16 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<DataLoader> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Arrays.asList(
-                new Loader01SingleCall(),
-                new Loader02MultipleCalls(),
-                new Loader03Callbacks(),
-                new Loader04RxSingleCall(),
-                new Loader05RxFlatMap(),
-                new Loader06RxConcatMap(),
-                new Loader07RxZip(),
-                new Loader08RxErrors()
+        StackOverflowService service = ServiceFactory.createService();
+        ArrayAdapter<Object> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Arrays.asList(
+                new Loader01SingleCall(service),
+                new Loader02MultipleCalls(service),
+                new Loader03Callbacks(service),
+                new Loader04RxSingleCall(service),
+                new Loader05RxFlatMap(service),
+                new Loader06RxConcatMap(service),
+                new Loader07RxZip(service),
+                new Loader08RxErrors(service)
         ));
         spinner.setAdapter(spinnerAdapter);
 
@@ -52,17 +57,30 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
+        ((ListView) findViewById(R.id.list)).setAdapter(adapter);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                DataLoader loader = spinnerAdapter.getItem(position);
+                Object loader = spinnerAdapter.getItem(position);
                 adapter.clear();
-                loader.loadItems(adapter, MainActivity.this);
+                if (loader instanceof DataLoader) {
+                    ((DataLoader) loader).loadItems(adapter, MainActivity.this);
+                } else if (loader instanceof RxDataLoader) {
+                    RxDataLoader<?> rxDataLoader = (RxDataLoader<?>) loader;
+                    rxDataLoader
+                            .loadItems()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(adapter::addAll, t -> showError());
+                }
             }
 
             @Override public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+    }
 
-        ((ListView) findViewById(R.id.list)).setAdapter(adapter);
+    protected void showError() {
+        Toast.makeText(this, R.string.error_loading, Toast.LENGTH_LONG).show();
     }
 }

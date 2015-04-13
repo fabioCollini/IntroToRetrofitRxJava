@@ -7,12 +7,17 @@ import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 
 public class Loader02MultipleCalls extends DataLoader {
+
+    public Loader02MultipleCalls(StackOverflowService service) {
+        super(service);
+    }
 
     @Override public void loadItems(ArrayAdapter<Object> adapter, Context context) {
 

@@ -5,6 +5,7 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
+import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import retrofit.Callback;
@@ -12,6 +13,10 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class Loader03Callbacks extends DataLoader {
+
+    public Loader03Callbacks(StackOverflowService service) {
+        super(service);
+    }
 
     public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         service.getTopUsers(new Callback<UserResponse>() {

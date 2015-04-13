@@ -1,27 +1,27 @@
 package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
-import android.content.Context;
-import android.widget.ArrayAdapter;
+import java.util.List;
 
+import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class Loader06RxConcatMap extends DataLoader {
+public class Loader06RxConcatMap extends RxDataLoader<UserStats> {
 
-    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
-        service.getTopUsers()
+    public Loader06RxConcatMap(StackOverflowService service) {
+        super(service);
+    }
+
+    public Observable<List<UserStats>> loadItems() {
+        return service.getTopUsers()
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
                 .flatMap(this::loadRepoStats)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::add, t -> showError(context));
+                .toList();
     }
 
     private Observable<UserStats> loadRepoStats(User user) {

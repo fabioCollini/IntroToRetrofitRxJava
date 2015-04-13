@@ -1,38 +1,35 @@
 package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
-import android.content.Context;
-import android.widget.ArrayAdapter;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class Loader08RxErrors extends DataLoader {
+public class Loader08RxErrors extends RxDataLoader<UserStats> {
 
     private List<UserStats> cache;
 
-    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
-        service.getTopUsers()
+    public Loader08RxErrors(StackOverflowService service) {
+        super(service);
+    }
+
+    public Observable<List<UserStats>> loadItems() {
+        return service.getTopUsers()
                 .retry(3)
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
                 .concatMap(this::loadRepoStats)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .toList()
                 .timeout(20, TimeUnit.SECONDS)
                 .retry(2)
                 .doOnNext(this::saveOnCache)
-                .onErrorResumeNext(this::loadFromCache)
-                .subscribe(adapter::addAll, t -> showError(context));
+                .onErrorResumeNext(this::loadFromCache);
     }
 
     private void saveOnCache(List<UserStats> users) {

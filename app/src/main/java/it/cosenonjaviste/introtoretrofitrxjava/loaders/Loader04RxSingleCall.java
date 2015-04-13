@@ -1,16 +1,20 @@
 package it.cosenonjaviste.introtoretrofitrxjava.loaders;
 
-import android.content.Context;
-import android.widget.ArrayAdapter;
+import java.util.List;
 
+import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
+import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import rx.Observable;
 
-public class Loader04RxSingleCall extends DataLoader {
+public class Loader04RxSingleCall extends RxDataLoader<User> {
 
-    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
-        service.getTopUsers()
+    public Loader04RxSingleCall(StackOverflowService service) {
+        super(service);
+    }
+
+    public Observable<List<User>> loadItems() {
+        return service.getTopUsers()
                 .map(UserResponse::getItems)
                 .map(users -> {
                     if (users.size() > 5) {
@@ -18,9 +22,6 @@ public class Loader04RxSingleCall extends DataLoader {
                     } else {
                         return users;
                     }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::addAll, t -> showError(context));
+                });
     }
 }

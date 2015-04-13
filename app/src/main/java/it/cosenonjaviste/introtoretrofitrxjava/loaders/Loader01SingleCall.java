@@ -6,9 +6,14 @@ import android.widget.ArrayAdapter;
 
 import java.util.List;
 
+import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 
 public class Loader01SingleCall extends DataLoader {
+
+    public Loader01SingleCall(StackOverflowService service) {
+        super(service);
+    }
 
     @Override public void loadItems(ArrayAdapter<Object> adapter, Context context) {
         new AsyncTask<Void, Void, List<User>>() {

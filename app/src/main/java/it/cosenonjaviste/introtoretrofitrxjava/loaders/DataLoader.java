@@ -5,15 +5,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import it.cosenonjaviste.introtoretrofitrxjava.R;
-import it.cosenonjaviste.introtoretrofitrxjava.ServiceFactory;
 import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 
 public abstract class DataLoader {
 
     protected StackOverflowService service;
 
-    public DataLoader() {
-        service = ServiceFactory.createService(StackOverflowService.class);
+    public DataLoader(StackOverflowService service) {
+        this.service = service;
     }
 
     public abstract void loadItems(ArrayAdapter<Object> adapter, Context context);

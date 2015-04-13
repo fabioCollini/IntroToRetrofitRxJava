@@ -8,7 +8,7 @@ import retrofit.client.OkClient;
 
 public class ServiceFactory {
 
-    public static <T> T createService(Class<T> serviceClass) {
+    public static StackOverflowService createService() {
         OkHttpClient client = new OkHttpClient();
         client.networkInterceptors().add(new StethoInterceptor());
 
@@ -21,6 +21,6 @@ public class ServiceFactory {
                 })
                 .build();
         restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
-        return restAdapter.create(serviceClass);
+        return restAdapter.create(StackOverflowService.class);
     }
 }
