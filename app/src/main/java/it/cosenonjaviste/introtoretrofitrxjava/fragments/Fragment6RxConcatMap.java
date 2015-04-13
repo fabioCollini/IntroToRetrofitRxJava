@@ -1,8 +1,7 @@
-package it.cosenonjaviste.introtoretrofitrxjava.loaders;
+package it.cosenonjaviste.introtoretrofitrxjava.fragments;
 
 import java.util.List;
 
-import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
@@ -10,17 +9,13 @@ import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 import rx.Observable;
 
-public class Loader05RxFlatMap extends RxDataLoader<UserStats> {
-
-    public Loader05RxFlatMap(StackOverflowService service) {
-        super(service);
-    }
+public class Fragment6RxConcatMap extends BaseRxFragment<UserStats> {
 
     public Observable<List<UserStats>> loadItems() {
         return service.getTopUsers()
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
-                .flatMap(this::loadRepoStats)
+                .concatMap(this::loadRepoStats)
                 .toList();
     }
 

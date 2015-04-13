@@ -1,17 +1,12 @@
-package it.cosenonjaviste.introtoretrofitrxjava.loaders;
+package it.cosenonjaviste.introtoretrofitrxjava.fragments;
 
 import java.util.List;
 
-import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import rx.Observable;
 
-public class Loader04RxSingleCall extends RxDataLoader<User> {
-
-    public Loader04RxSingleCall(StackOverflowService service) {
-        super(service);
-    }
+public class Fragment4RxSingleCall extends BaseRxFragment<User> {
 
     public Observable<List<User>> loadItems() {
         return service.getTopUsers()

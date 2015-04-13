@@ -1,9 +1,8 @@
-package it.cosenonjaviste.introtoretrofitrxjava.loaders;
+package it.cosenonjaviste.introtoretrofitrxjava.fragments;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
@@ -11,13 +10,9 @@ import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 import rx.Observable;
 
-public class Loader08RxErrors extends RxDataLoader<UserStats> {
+public class Fragment8RxErrors extends BaseRxFragment<UserStats> {
 
     private List<UserStats> cache;
-
-    public Loader08RxErrors(StackOverflowService service) {
-        super(service);
-    }
 
     public Observable<List<UserStats>> loadItems() {
         return service.getTopUsers()

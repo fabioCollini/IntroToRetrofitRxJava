@@ -1,25 +1,19 @@
-package it.cosenonjaviste.introtoretrofitrxjava.loaders;
+package it.cosenonjaviste.introtoretrofitrxjava.fragments;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.BadgeResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.TagResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 
-public class Loader02MultipleCalls extends DataLoader {
+public class Fragment2MultipleCalls extends BaseFragment {
 
-    public Loader02MultipleCalls(StackOverflowService service) {
-        super(service);
-    }
-
-    @Override public void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    @Override public void loadItems(ArrayAdapter<Object> adapter) {
 
         new AsyncTask<Void, Void, List<UserStats>>() {
             @Override protected List<UserStats> doInBackground(Void... params) {
@@ -34,7 +28,7 @@ public class Loader02MultipleCalls extends DataLoader {
                 if (users != null) {
                     adapter.addAll(users);
                 } else {
-                    showError(context);
+                    showError();
                 }
             }
         }.execute();

@@ -1,24 +1,18 @@
-package it.cosenonjaviste.introtoretrofitrxjava.loaders;
+package it.cosenonjaviste.introtoretrofitrxjava.fragments;
 
-import android.content.Context;
 import android.widget.ArrayAdapter;
 
 import java.util.List;
 
-import it.cosenonjaviste.introtoretrofitrxjava.StackOverflowService;
 import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class Loader03Callbacks extends DataLoader {
+public class Fragment3Callbacks extends BaseFragment {
 
-    public Loader03Callbacks(StackOverflowService service) {
-        super(service);
-    }
-
-    public void loadItems(ArrayAdapter<Object> adapter, Context context) {
+    public void loadItems(ArrayAdapter<Object> adapter) {
         service.getTopUsers(new Callback<UserResponse>() {
             @Override public void success(UserResponse repoResponse, Response response) {
                 List<User> users = repoResponse.getItems();
@@ -29,7 +23,7 @@ public class Loader03Callbacks extends DataLoader {
             }
 
             @Override public void failure(RetrofitError error) {
-                showError(context);
+                showError();
             }
         });
     }
