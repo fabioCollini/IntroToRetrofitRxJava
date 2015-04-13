@@ -20,7 +20,7 @@ public class ServiceFactory {
                     request.addQueryParam("key", "fruiv4j48P0HjSJ8t7a8Gg((");
                 })
                 .build();
-        restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
+        restAdapter.setLogLevel(RestAdapter.LogLevel.BASIC);
         return restAdapter.create(StackOverflowService.class);
     }
 }
