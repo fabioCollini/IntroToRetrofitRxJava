@@ -41,8 +41,4 @@ public abstract class BaseFragment extends Fragment {
     protected void showError() {
         Toast.makeText(getActivity(), R.string.error_loading, Toast.LENGTH_LONG).show();
     }
-
-    @Override public String toString() {
-        return getClass().getSimpleName();
-    }
 }

@@ -49,8 +49,4 @@ public abstract class BaseRxFragment<T> extends Fragment {
     }
 
     public abstract Observable<List<T>> loadItems();
-
-    @Override public String toString() {
-        return getClass().getSimpleName();
-    }
 }
