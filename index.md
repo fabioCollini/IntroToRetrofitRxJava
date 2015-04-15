@@ -45,6 +45,11 @@ style: |
         background: none;
     }
     img[alt=marble] { width: 750px; }
+    .slide pre mark.comment span {
+      padding: 0;
+      background: 0 0;
+      color: #999;
+    }
 ---
 
 # Introduction to Retrofit and RxJava {#Cover}
@@ -56,145 +61,203 @@ style: |
 ![](pictures/cover.jpg)
 <!-- photo by John Carey, fiftyfootshadows.net -->
 
-## Service con un solo metodo
+## Retrofit
 
-    public interface GitHubServiceSync {
+## RxJava is not so simple...
 
-      @GET("/search/repositories?q=language:Java" +
-          "&sort=updated&order=desc")
-      RepoResponse listLastRepos();
+![](pictures/rx_twitter.png)
+
+## Server call definition
+
+    public interface StackOverflowService {
+
+      @GET("/users")
+      UserResponse getTopUsers();
 
     }
+
+## Service creation
+
+    RestAdapter restAdapter = new RestAdapter.Builder()
+      .setEndpoint("http://api.stackexchange.com/2.2/")
+      .setRequestInterceptor(request -> {
+        request.addQueryParam("site", "stackoverflow");
+        request.addQueryParam("key", "...");
+      })
+      .build();
+    restAdapter.setLogLevel(RestAdapter.LogLevel.BASIC);
+    StackOverflowService service = 
+      restAdapter.create(StackOverflowService.class);
+
 
 ## Chiamata sincrona
 
-    private List<Repo> loadItemsSync() {
-      RestAdapter restAdapter = 
-        new RestAdapter.Builder()
-        .setEndpoint("https://api.github.com/")
-        .build();
-      restAdapter.setLogLevel(LogLevel.BASIC);
-      GitHubServiceSync service = restAdapter.create(
-        GitHubServiceSync.class);
-      return service.listLastRepos().getItems();
+    private List<User> loadItemsSync() {
+      List<User> users = service.getTopUsersSync()
+        .getItems();
+      if (users.size() > 5) {
+        users = users.subList(0, 5);
+      }
+      return users;
     }
 
-## Threading    
+## AsyncTask
+{:.smallSize}
 
-    public void loadItems() {
-      new Thread(() -> {
+    new AsyncTask<Void, Void, List<User>>() {
+      @Override 
+      protected List<User> doInBackground(Void... p) {
         try {
-          List<Repo> items = loadItemsSync();
-          runOnUiThread(() -> adapter.addAll(items));
+          return loadItemsSync();
         } catch (Exception e) {
-          runOnUiThread(() -> Toast.makeText(this, R.string.error_loading, Toast.LENGTH_LONG).show());
+          return null;
         }
-      }).start();
-    }
+      }
+      @Override
+      protected void onPostExecute(List<User> users) {
+        if (users != null) {
+          adapter.addAll(users);
+        } else {
+          showError();
+        }
+      }
+    }.execute();
 
-## Service multi metodo con parametri
+## Server call parameters
 
-    @GET("/repos/{owner}/{repo}/contributors")
-    List<User> listContributors(
-        @Path("owner") String ownerLoginName,
-        @Path("repo") String repoName
+    @GET("/users/{userId}/top-tags") 
+    TagResponse getTagsSync(
+      @Path("userId") int userId
+    );
+  
+    @GET("/users/{userId}/badges") 
+    BadgeResponse getBadgesSync(
+      @Path("userId") int userId
     );
 
-    @GET("/repos/{owner}/{repo}/languages")
-    Map<String, String> listLanguages(
-        @Path("owner") String ownerLoginName,
-        @Path("repo") String repoName
-    );
+## Server call compositions
 
-## 02
-
-    RepoResponse repoResponse = service.listLastRepos();
-    List<Repo> items = repoResponse.getItems();
-    List<RepoStats> statsList = new ArrayList<>();
-    for (Repo repo : items) {
-      String login = repo.getOwner().getLogin();
-      String name = repo.getName();
-      List<User> users = 
-          service.listContributors(login, name);
-      Set<String> langs = 
-          service.listLanguages(login, name).keySet();
-      statsList.add(new RepoStats(name, users, langs));
+    List<User> users = service.getTopUsers().getItems();
+    if (users.size() > 5) {
+      users = users.subList(0, 5);
     }
+    List<UserStats> statsList = new ArrayList<>();
+    for (User user : users) {
+      TagResponse tags = 
+        service.getTagsSync(user.getId());
+      BadgeResponse badges = 
+        service.getBadgesSync(user.getId());
+      statsList.add(new UserStats(user, 
+        tags.getItems(), badges.getItems()));
+    }
+    return statsList;
 
-## Service con callback
+## Callbacks
 
-    public interface GitHubServiceCallback {
+    public interface StackOverflowService {
 
-      @GET("/search/repositories?q=language:Java" +
-          "&sort=updated&order=desc") 
-      void listLastRepos(Callback<RepoResponse> c);
+      @GET("/users") 
+      void getTopUsers(Callback<UserResponse> callback);
 
     }
 
 ## 03
 
-    service.listLastRepos(new Callback<RepoResponse>() {
+    service.getTopUsers(new Callback<UserResponse>() {
       @Override public void success(
-          RepoResponse repoResponse, Response r) {
-        List<Repo> items = repoResponse.getItems();
-        adapter.addAll(items);
+          UserResponse repoResponse, Response r) {
+        List<User> users = repoResponse.getItems();
+        if (users.size() > 5)
+          users = users.subList(0, 5);
+        adapter.addAll(users);
       }
-
-      @Override public void failure(RetrofitError e) {
+      @Override 
+      public void failure(RetrofitError error) {
         showError();
+      }
+    });
+
+## 03
+
+    service.getTopUsers(new Callback<UserResponse>() {
+      @Override public void success(
+          UserResponse repoResponse, Response r) {
+        <mark>List<User> users = repoResponse.getItems();</mark>
+        <mark>if (users.size() > 5)</mark>
+        <mark>  users = users.subList(0, 5);</mark>
+        <mark>adapter.addAll(users);</mark>
+      }
+      @Override 
+      public void failure(RetrofitError error) {
+        showError();
+      }
+    });
+
+## 03
+
+    service.getTopUsers(new Callback<UserResponse>() {
+      @Override public void success(
+          UserResponse repoResponse, Response r) {
+        List<User> users = repoResponse.getItems();
+        if (users.size() > 5)
+          users = users.subList(0, 5);
+        adapter.addAll(users);
+      }
+      @Override 
+      public void failure(RetrofitError error) {
+        <mark>showError();</mark>
       }
     });
 
 ## Callback hell
 {:.smallSize}
 
-    service.listContributors(login, repoName, new Callback<List<User>>() {
-      public void success(List<User> users, Response r) {
-        service.listLanguages(login, repoName, 
-            new Callback<Map<String, String>>() {
-          public void success(Map<String, String> langs, Response r) {
-            callback.success(
-                new RepoStats(repoName, users, langs.keySet()), r);
+    service.getBadges(userId, new Callback<BadgeResponse>() {
+      @Override public void success(BadgeResponse badges, Response r) {
+        service.getTags(userId, new Callback<TagResponse>() {
+          @Override public void success(TagResponse tags, Response r) {
+            callback.success(new UserStats(user, 
+              tags.getItems(), badges.getItems()), r);
           }
-          public void failure(RetrofitError error) {
+
+          @Override public void failure(RetrofitError error) {
             callback.failure(error);
           }
         });
       }
-      public void failure(RetrofitError error) {
+
+      @Override public void failure(RetrofitError error) {
         callback.failure(error);
       }
     });
 
 ## Service Rx
 
-    public interface GitHubService {
+    public interface StackOverflowService {
 
-      @GET("/search/repositories?q=language:Java" +
-          "&sort=updated&order=desc")
-      Observable<RepoResponse> listLastRepos();
+      @GET("/users")
+      Observable<UserResponse> getTopUsers();
 
     }
 
 ## 04
 
-    service.listLastRepos()
-        .subscribe(
-          new Action1<RepoResponse>() {
-            @Override public void call(RepoResponse r) {
-              adapter.addAll(r.getItems());
-            }
-          },
-          new Action1<Throwable>() {
-            @Override public void call(Throwable t) {
-              showError();
-            }
-          }
-        );
+    service
+      .getTopUsers()
+      .subscribe(new Action1<UserResponse>() {
+        @Override public void call(UserResponse r) {
+          adapter.addAll(r.getItems());
+        }
+      }, new Action1<Throwable>() {
+        @Override public void call(Throwable t) {
+          showError();
+        }
+      });
 
 ## Java 8
 
-    service.listLastRepos()
+    service
+        .getTopUsers()
         .subscribe(
           r -> adapter.addAll(r.getItems()), 
           t -> showError()
@@ -204,7 +267,8 @@ style: |
 
 ## Threading
 
-    service.listLastRepos()
+    service
+        .getTopUsers()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(
@@ -212,33 +276,251 @@ style: |
           t -> showError()
         );
 
-
 ## Map
 
 ![marble](pictures/map.png)
+
+## Map
+
+    service.getTopUsers()
+      .subscribe(r -> adapter.addAll(r.getItems()));
+
+## Map
+
+    service.getTopUsers()
+      .subscribe(r -> adapter.addAll(r.getItems()));
+
+    service.getTopUsers()
+        <mark>.map(r -> r.getItems())</mark>
+        .subscribe(items -> adapter.addAll(items));
+
+## Map
+
+    service.getTopUsers()
+      .subscribe(r -> adapter.addAll(r.getItems()));
+
+    service.getTopUsers()
+        .map(r -> r.getItems())
+        .subscribe(items -> adapter.addAll(items));
+
+    service.getTopUsers()
+        .map(UserResponse::getItems)
+        .subscribe(adapter::addAll);
 
 ## FlatMap
 
 ![marble](pictures/flatMap.png)
 
-## Ordine elementi concatMap
+## FlatMap
+
+    <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
+    <mark class="comment">    User user) {
+    <mark class="comment">  return</mark> service.getTags(user.getId())
+          .map(TagResponse::getItems)
+    <mark class="comment">      .flatMap(tags -></mark>
+    <mark class="comment">          service.getBadges(user.getId())</mark>
+    <mark class="comment">              .map(BadgeResponse::getItems)</mark>
+    <mark class="comment">              .map(badges -> </mark>
+    <mark class="comment">                new UserStats(user, tags, badges)</mark>
+    <mark class="comment">              )</mark>
+    <mark class="comment">      );</mark>
+    <mark class="comment">}</mark>
+
+## FlatMap
+
+    <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
+    <mark class="comment">    User user) {
+    <mark class="comment">  return</mark> service.getTags(user.getId())
+          .map(TagResponse::getItems)
+          .flatMap(tags ->
+    <mark class="comment">          service.getBadges(user.getId())</mark>
+    <mark class="comment">              .map(BadgeResponse::getItems)</mark>
+    <mark class="comment">              .map(badges -> </mark>
+    <mark class="comment">                new UserStats(user, tags, badges)</mark>
+    <mark class="comment">              )</mark>
+          );
+    <mark class="comment">}</mark>
+
+## FlatMap
+
+    <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
+    <mark class="comment">    User user) {
+    <mark class="comment">  return</mark> service.getTags(user.getId())
+          .map(TagResponse::getItems)
+          .flatMap(tags ->
+              service.getBadges(user.getId())
+                  .map(BadgeResponse::getItems)
+    <mark class="comment">              .map(badges -> </mark>
+    <mark class="comment">                new UserStats(user, tags, badges)</mark>
+    <mark class="comment">              )</mark>
+          );
+    <mark class="comment">}</mark>
+
+## FlatMap
+
+    private Observable<UserStats> loadRepoStats(
+        User user) {
+      return service.getTags(user.getId())
+          .map(TagResponse::getItems)
+          .flatMap(tags ->
+              service.getBadges(user.getId())
+                  .map(BadgeResponse::getItems)
+                  .map(badges -> 
+                    new UserStats(user, tags, badges)
+                  )
+          );
+    }
+
+## FlatMap
+
+    service
+        .getTopUsers()
+
+## FlatMap
+
+    service
+        .getTopUsers()
+        .flatMap(r -> Observable.from(r.getItems()))
+
+## FlatMap
+
+    service
+        .getTopUsers()
+        .flatMapIterable(UserResponse::getItems)
+
+## FlatMap
+
+    service
+        .getTopUsers()
+        .flatMapIterable(UserResponse::getItems)
+        .limit(5)
+
+## FlatMap
+
+    service
+        .getTopUsers()
+        .flatMapIterable(UserResponse::getItems)
+        .limit(5)
+        .flatMap(this::loadRepoStats)
+
+## FlatMap
+
+    service
+        .getTopUsers()
+        .flatMapIterable(UserResponse::getItems)
+        .limit(5)
+        .flatMap(this::loadRepoStats)
+        .toList();
+
+## FlatMap implementation
+
+    public final <R> Observable<R> flatMap(
+          Func1<
+            ? super T, 
+            ? extends Observable<? extends R>
+          > func) {
+      <mark>return merge(map(func));</mark>
+    }
+
+## ConcatMap
 
 ![marble](pictures/concatMap.png)
+
+## ConcatMap implementation
+
+    public final <R> Observable<R> concatMap(
+          Func1<
+            ? super T, 
+            ? extends Observable<? extends R>
+          > func) {
+        <mark>return concat(map(func));</mark>
+    }
+
+## FlatMap
+
+    service
+        .getTopUsers()
+        .flatMapIterable(UserResponse::getItems)
+        .limit(5)
+        .<mark>concatMap</mark>(this::loadRepoStats)
+        .toList();
 
 ## zip
 
 ![marble](pictures/zip.png)
 
-## Esempio con Executor con 5 thread
+## flatMap -> zip
 
-## polling o ciclo di vita activity?
+    service.getTags(user.getId())
+        .map(TagResponse::getItems)
+        .flatMap(tags ->
+            service.getBadges(user.getId())
+                .map(BadgeResponse::getItems)
+                .map(badges -> 
+                  new UserStats(user, tags, badges)
+                )
+        );
 
-## interval
+## flatMap -> zip
+
+    Observable.zip(
+        <mark class="comment">service.getTags(user.getId())</mark>
+        <mark class="comment">  .map(TagResponse::getItems),</mark>
+        <mark class="comment">service.getBadges(user.getId())</mark>
+        <mark class="comment">  .map(BadgeResponse::getItems),</mark>
+        <mark class="comment">(tags, badges) -> </mark>
+        <mark class="comment">  new UserStats(user, tags, badges)</mark>
+    );        
+
+## flatMap -> zip
+
+    Observable.zip(
+        <mark>service.getTags(user.getId())</mark>
+        <mark>  .map(TagResponse::getItems),</mark>
+        <mark class="comment">service.getBadges(user.getId())</mark>
+        <mark class="comment">  .map(BadgeResponse::getItems),</mark>
+        <mark class="comment">(tags, badges) -> </mark>
+        <mark class="comment">  new UserStats(user, tags, badges)</mark>
+    );        
+
+## flatMap -> zip
+
+    Observable.zip(
+        service.getTags(user.getId())
+          .map(TagResponse::getItems),
+        <mark>service.getBadges(user.getId())</mark>
+        <mark>  .map(BadgeResponse::getItems),</mark>
+        <mark class="comment">(tags, badges) -> </mark>
+        <mark class="comment">  new UserStats(user, tags, badges)</mark>
+    );        
+
+## flatMap -> zip
+
+    Observable.zip(
+        service.getTags(user.getId())
+          .map(TagResponse::getItems),
+        service.getBadges(user.getId())
+          .map(BadgeResponse::getItems),
+        <mark>(tags, badges) -> </mark>
+        <mark>  new UserStats(user, tags, badges)</mark>
+    );        
+
+## flatMap -> zip
+
+    Observable.zip(
+        service.getTags(user.getId())
+          .map(TagResponse::getItems),
+        service.getBadges(user.getId())
+          .map(BadgeResponse::getItems),
+        (tags, badges) -> 
+          new UserStats(user, tags, badges)
+    );        
 
 ## subscription
 
 ## cold/hot
 
+## ciclo di vita activity?
 
 ## Shower Key Features
 
