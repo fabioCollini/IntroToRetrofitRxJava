@@ -48,11 +48,15 @@ public class MainActivity extends ActionBarActivity {
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Fragment fragment = Fragment.instantiate(MainActivity.this, "it.cosenonjaviste.introtoretrofitrxjava.fragments." + spinnerAdapter.getItem(position));
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.main_content, fragment)
-                        .commit();
+                String tag = "fragment_" + position;
+                if (getSupportFragmentManager().findFragmentByTag(tag) == null) {
+                    String className = "it.cosenonjaviste.introtoretrofitrxjava.fragments." + spinnerAdapter.getItem(position);
+                    Fragment fragment = Fragment.instantiate(MainActivity.this, className);
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.main_content, fragment, tag)
+                            .commit();
+                }
             }
 
             @Override public void onNothingSelected(AdapterView<?> parent) {
