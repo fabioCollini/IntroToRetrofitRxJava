@@ -5,20 +5,23 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.observables.ConnectableObservable;
+import rx.subscriptions.Subscriptions;
 
 public class RetainedFragment<T> extends Fragment {
 
-    private ObservableHolder<T> object;
+    private Subscription connectableSubscription = Subscriptions.empty();
+
+    private ConnectableObservable<T> observable;
 
     public RetainedFragment() {
         setRetainInstance(true);
-        object = new ObservableHolder<>();
     }
 
     @Override public void onDestroy() {
         super.onDestroy();
-        object.destroy();
+        connectableSubscription.unsubscribe();
     }
 
     public static <T> RetainedFragment<T> getOrCreate(FragmentActivity activity, String tag) {
@@ -32,18 +35,23 @@ public class RetainedFragment<T> extends Fragment {
     }
 
     public boolean isRunning() {
-        return object.isRunning();
+        return observable != null;
     }
 
-    public void bind(ConnectableObservable<T> replay) {
-        object.bind(replay);
+    public void bind(ConnectableObservable<T> observable) {
+        this.observable = observable;
+        connectableSubscription = observable.connect();
     }
 
     public Observable<T> getObservable() {
-        return object.getObservable();
+        if (observable == null) {
+            return Observable.empty();
+        }
+        return observable;
     }
 
     public void clear() {
-        object.clear();
+        observable = null;
+        connectableSubscription = Subscriptions.empty();
     }
 }

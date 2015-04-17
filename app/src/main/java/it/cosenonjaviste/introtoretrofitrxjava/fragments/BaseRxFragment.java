@@ -47,7 +47,7 @@ public abstract class BaseRxFragment<T> extends Fragment {
 
         if (savedInstanceState != null) {
             List<T> savedItems = Parcels.unwrap(savedInstanceState.getParcelable(ITEMS));
-            if (savedItems != null) {
+            if (savedItems != null && !savedItems.isEmpty()) {
                 showDataInList(savedItems);
             } else if (retainedFragment.isRunning()) {
                 showProgress();
