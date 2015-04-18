@@ -1,7 +1,6 @@
 package it.cosenonjaviste.introtoretrofitrxjava.fragments;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import rx.Observable;
@@ -24,8 +23,7 @@ public class RetainedFragment<T> extends Fragment {
         connectableSubscription.unsubscribe();
     }
 
-    public static <T> RetainedFragment<T> getOrCreate(FragmentActivity activity, String tag) {
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+    public static <T> RetainedFragment<T> getOrCreate(FragmentManager fragmentManager, String tag) {
         RetainedFragment<T> fragment = (RetainedFragment<T>) fragmentManager.findFragmentByTag(tag);
         if (fragment == null) {
             fragment = new RetainedFragment<>();

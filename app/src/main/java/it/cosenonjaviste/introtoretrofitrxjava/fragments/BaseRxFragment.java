@@ -40,7 +40,7 @@ public abstract class BaseRxFragment<T> extends Fragment {
 
         listView.setAdapter(adapter);
 
-        retainedFragment = RetainedFragment.getOrCreate(getActivity(), "retained");
+        retainedFragment = RetainedFragment.getOrCreate(getChildFragmentManager(), "retained");
 
         if (retainedFragment.get() == null) {
             Observable<List<T>> observable = loadItems()
