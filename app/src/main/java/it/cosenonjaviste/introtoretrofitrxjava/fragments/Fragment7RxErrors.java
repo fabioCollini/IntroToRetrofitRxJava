@@ -10,7 +10,7 @@ import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 import rx.Observable;
 
-public class Fragment8RxErrors extends BaseRxFragment<UserStats> {
+public class Fragment7RxErrors extends BaseRxFragment<UserStats> {
 
     private List<UserStats> cache;
 

@@ -8,7 +8,6 @@ import it.cosenonjaviste.introtoretrofitrxjava.model.User;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserResponse;
 import it.cosenonjaviste.introtoretrofitrxjava.model.UserStats;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 public class Fragment6RxConcatMap extends BaseRxFragment<UserStats> {
 
@@ -21,12 +20,10 @@ public class Fragment6RxConcatMap extends BaseRxFragment<UserStats> {
     }
 
     private Observable<UserStats> loadRepoStats(User user) {
-        return service.getTags(user.getId()).subscribeOn(Schedulers.io())
-                .map(TagResponse::getItems)
-                .flatMap(tags ->
-                                service.getBadges(user.getId())
-                                        .map(BadgeResponse::getItems)
-                                        .map(badges -> new UserStats(user, tags, badges))
-                );
+        return Observable.zip(
+                service.getTags(user.getId()).map(TagResponse::getItems),
+                service.getBadges(user.getId()).map(BadgeResponse::getItems),
+                (tags, badges) -> new UserStats(user, tags, badges)
+        );
     }
 }

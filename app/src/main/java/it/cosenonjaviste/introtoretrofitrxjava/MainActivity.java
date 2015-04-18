@@ -15,10 +15,9 @@ import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment1SingleCall;
 import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment2MultipleCalls;
 import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment3Callbacks;
 import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment4RxSingleCall;
-import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment5RxFlatMap;
+import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment5RxFlatMapZip;
 import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment6RxConcatMap;
-import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment7RxZip;
-import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment8RxErrors;
+import it.cosenonjaviste.introtoretrofitrxjava.fragments.Fragment7RxErrors;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -38,10 +37,9 @@ public class MainActivity extends ActionBarActivity {
                 Fragment2MultipleCalls.class.getSimpleName(),
                 Fragment3Callbacks.class.getSimpleName(),
                 Fragment4RxSingleCall.class.getSimpleName(),
-                Fragment5RxFlatMap.class.getSimpleName(),
+                Fragment5RxFlatMapZip.class.getSimpleName(),
                 Fragment6RxConcatMap.class.getSimpleName(),
-                Fragment7RxZip.class.getSimpleName(),
-                Fragment8RxErrors.class.getSimpleName()
+                Fragment7RxErrors.class.getSimpleName()
         ));
         spinner.setAdapter(spinnerAdapter);
 
