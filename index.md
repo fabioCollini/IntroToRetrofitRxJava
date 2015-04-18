@@ -45,29 +45,69 @@ style: |
         background: none;
     }
     img[alt=marble] { width: 750px; }
+    img[alt=right] { float: right; }
+    .slide pre mark {
+      padding-left: 0;
+      padding-right: 0;
+    }
     .slide pre mark.comment span {
       padding: 0;
       background: 0 0;
       color: #999;
     }
+    #ego img {
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+    #ego a {
+      border-bottom: 0px;
+      color: #666666;
+    }
+    .slide.top100 pre, .slide.top100 p { margin-top: 100px; }
+    .slide.top120 pre, .slide.top120 p { margin-top: 120px; }
+    .slide.top170 pre, .slide.top170 p { margin-top: 170px; }
 ---
 
 # Introduction to Retrofit and RxJava {#Cover}
 
 *Fabio Collini*
 
-*Word in progress...*
+*Work in progress...*
 
 ![](pictures/cover.jpg)
 <!-- photo by John Carey, fiftyfootshadows.net -->
 
+
+## Ego slide
+
+<div id="ego">
+<img style="float:right; margin-right: 40px" src="pictures/androidAvanzato.png">
+<div><img src="pictures/twitter.png"><a href="https://twitter.com/fabioCollini">@fabioCollini</a></div>
+<div><img src="pictures/linkedin.png"><a href="http://linkedin.com/in/fabiocollini">linkedin.com/in/fabiocollini</a></div>
+<div><img src="pictures/folderorganizer.png"><a href="http://www.folderorganizer.net/">Folder Organizer</a></div>
+<div><img src="pictures/cosenonjaviste.png"><a href="http://www.cosenonjaviste.it">cosenonjaviste.it</a></div>
+<div><img src="pictures/nanabianca.png"><a href="http://nanabianca.it/">nana bianca</a></div>
+<div><img src="pictures/freapp.png"><a href="http://freapp.com/">Freapp</a></div>
+<div><img src="pictures/instal.png"><a href="http://instal.com">instal.com</a></div>
+<div><img src="pictures/raintomorrow.png"><a href="https://play.google.com/store/apps/details?id=com.willitraintomorrow">Rain tomorrow?</a></div>
+</div>
+
+
 ## Retrofit
 
+- Turns your REST API into a Java interface
+- Simple to use
+- JSON conversion using Gson
+- Custom converters
+- Logging
+
 ## RxJava is not so simple...
+{:.top100}
 
 ![](pictures/rx_twitter.png)
 
-## Server call definition
+## HTTP request definition
+{:.top170}
 
     public interface StackOverflowService {
 
@@ -78,7 +118,52 @@ style: |
 
 ## Service creation
 
-    RestAdapter restAdapter = new RestAdapter.Builder()
+    RestAdapter restAdapter = 
+      new RestAdapter.Builder()
+
+## Service creation
+
+    RestAdapter restAdapter = 
+      new RestAdapter.Builder()
+      <mark>.setEndpoint("http://api.stackexchange.com/2.2/")</mark>
+
+## Service creation
+
+    RestAdapter restAdapter = 
+      new RestAdapter.Builder()
+      .setEndpoint("http://api.stackexchange.com/2.2/")
+      <mark>.setRequestInterceptor(request -> {</mark>
+        <mark>request.addQueryParam("site", "stackoverflow");</mark>
+        <mark>request.addQueryParam("key", "...");</mark>
+      <mark>})</mark>
+
+## Service creation
+
+    <mark>RestAdapter restAdapter</mark> = 
+      new RestAdapter.Builder()
+      .setEndpoint("http://api.stackexchange.com/2.2/")
+      .setRequestInterceptor(request -> {
+        request.addQueryParam("site", "stackoverflow");
+        request.addQueryParam("key", "...");
+      })
+      <mark>.build();</mark>
+
+## Service creation
+
+    RestAdapter restAdapter = 
+      new RestAdapter.Builder()
+      .setEndpoint("http://api.stackexchange.com/2.2/")
+      .setRequestInterceptor(request -> {
+        request.addQueryParam("site", "stackoverflow");
+        request.addQueryParam("key", "...");
+      })
+      .build();
+    restAdapter.setLogLevel(<mark>LogLevel.BASIC</mark>);
+
+## Service creation
+
+    RestAdapter restAdapter = 
+      new RestAdapter.Builder()
       .setEndpoint("http://api.stackexchange.com/2.2/")
       .setRequestInterceptor(request -> {
         request.addQueryParam("site", "stackoverflow");
@@ -86,20 +171,58 @@ style: |
       })
       .build();
     restAdapter.setLogLevel(RestAdapter.LogLevel.BASIC);
-    StackOverflowService service = 
-      restAdapter.create(StackOverflowService.class);
+    <mark>StackOverflowService service = </mark>
+      <mark>restAdapter.create(StackOverflowService.class);</mark>
 
 
-## Chiamata sincrona
+## Synchronous request
+{:.top120}
 
     private List<User> loadItemsSync() {
-      List<User> users = service.getTopUsersSync()
-        .getItems();
+      List<User> users = 
+        <mark>service.getTopUsers()</mark>.getItems();
       if (users.size() > 5) {
         users = users.subList(0, 5);
       }
       return users;
     }
+
+## Request parameters
+{:.top170}
+
+    @GET("/users/{userId}/top-tags") 
+    TagResponse getTags(@Path("userId") int userId);
+  
+    @GET("/users/{userId}/badges") 
+    BadgeResponse getBadges(@Path("userId") int userId);
+
+## Other annotations
+
+- @GET, @POST, @PUT, @DELETE, @HEAD
+- @Path
+- @Query
+- @QueryMap
+- @Body
+- @FormUrlEncoded
+- @Field
+- @Headers
+
+## Composition
+
+    List<User> users = service.<mark>getTopUsers</mark>().getItems();
+    if (users.size() > 5) {
+      users = users.subList(0, 5);
+    }
+    List<UserStats> statsList = new ArrayList<>();
+    for (User user : users) {
+      TagResponse tags = 
+        service.<mark>getTags</mark>(user.getId());
+      BadgeResponse badges = 
+        service.<mark>getBadges</mark>(user.getId());
+      statsList.add(new UserStats(user, 
+        tags.getItems(), badges.getItems()));
+    }
+    return statsList;
 
 ## AsyncTask
 {:.smallSize}
@@ -108,7 +231,7 @@ style: |
       @Override 
       protected List<User> doInBackground(Void... p) {
         try {
-          return loadItemsSync();
+          return <mark>loadItemsSync();</mark>
         } catch (Exception e) {
           return null;
         }
@@ -116,68 +239,34 @@ style: |
       @Override
       protected void onPostExecute(List<User> users) {
         if (users != null) {
-          adapter.addAll(users);
+          <mark>adapter.addAll(users);</mark>
         } else {
-          showError();
+          <mark>showError();</mark>
         }
       }
     }.execute();
 
-## Server call parameters
+## Synchronous request
+{:.top120}
 
-    @GET("/users/{userId}/top-tags") 
-    TagResponse getTagsSync(
-      @Path("userId") int userId
-    );
-  
-    @GET("/users/{userId}/badges") 
-    BadgeResponse getBadgesSync(
-      @Path("userId") int userId
-    );
+    public interface StackOverflowService {
 
-## Server call compositions
+      @GET("/users")
+      <mark>UserResponse</mark> getTopUsers();
 
-    List<User> users = service.getTopUsers().getItems();
-    if (users.size() > 5) {
-      users = users.subList(0, 5);
     }
-    List<UserStats> statsList = new ArrayList<>();
-    for (User user : users) {
-      TagResponse tags = 
-        service.getTagsSync(user.getId());
-      BadgeResponse badges = 
-        service.getBadgesSync(user.getId());
-      statsList.add(new UserStats(user, 
-        tags.getItems(), badges.getItems()));
-    }
-    return statsList;
 
 ## Callbacks
+{:.top120}
 
     public interface StackOverflowService {
 
       @GET("/users") 
-      void getTopUsers(Callback<UserResponse> callback);
+      void getTopUsers(<mark>Callback<UserResponse> callback</mark>);
 
     }
 
-## 03
-
-    service.getTopUsers(new Callback<UserResponse>() {
-      @Override public void success(
-          UserResponse repoResponse, Response r) {
-        List<User> users = repoResponse.getItems();
-        if (users.size() > 5)
-          users = users.subList(0, 5);
-        adapter.addAll(users);
-      }
-      @Override 
-      public void failure(RetrofitError error) {
-        showError();
-      }
-    });
-
-## 03
+## Callbacks in action
 
     service.getTopUsers(new Callback<UserResponse>() {
       @Override public void success(
@@ -187,13 +276,12 @@ style: |
         <mark>  users = users.subList(0, 5);</mark>
         <mark>adapter.addAll(users);</mark>
       }
-      @Override 
-      public void failure(RetrofitError error) {
+      @Override public void failure(RetrofitError e) {
         showError();
       }
     });
 
-## 03
+## Callbacks in action
 
     service.getTopUsers(new Callback<UserResponse>() {
       @Override public void success(
@@ -203,8 +291,7 @@ style: |
           users = users.subList(0, 5);
         adapter.addAll(users);
       }
-      @Override 
-      public void failure(RetrofitError error) {
+      @Override public void failure(RetrofitError e) {
         <mark>showError();</mark>
       }
     });
@@ -231,61 +318,127 @@ style: |
       }
     });
 
-## Service Rx
+## Retrofit
+{:.top120}
+
+    public interface StackOverflowService {
+
+      @GET("/users") 
+      void getTopUsers(<mark>Callback<UserResponse> callback</mark>);
+
+    }
+
+## Retrofit + RxJava
+{:.top120}
 
     public interface StackOverflowService {
 
       @GET("/users")
-      Observable<UserResponse> getTopUsers();
+      <mark>Observable<UserResponse></mark> getTopUsers();
 
     }
 
-## 04
+## RxJava in action
 
     service
-      .getTopUsers()
+      .<mark>getTopUsers()</mark>
       .subscribe(new Action1<UserResponse>() {
         @Override public void call(UserResponse r) {
-          adapter.addAll(r.getItems());
+          <mark>adapter.addAll(r.getItems());</mark>
         }
       }, new Action1<Throwable>() {
         @Override public void call(Throwable t) {
-          showError();
+          <mark>showError();</mark>
         }
       });
 
-## Java 8
+## Retrolambda
+{:.top120}
 
     service
-        .getTopUsers()
+        .<mark>getTopUsers()</mark>
         .subscribe(
-          r -> adapter.addAll(r.getItems()), 
-          t -> showError()
+          r -> <mark>adapter.addAll(r.getItems())</mark>, 
+          t -> <mark>showError()</mark>
         );
-
-## Observable con 3 callback
 
 ## Threading
+{:.top120}
 
     service
         .getTopUsers()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+        <mark>.subscribeOn(Schedulers.io())</mark>
+        <mark>.observeOn(AndroidSchedulers.mainThread())</mark>
         .subscribe(
           r -> adapter.addAll(r.getItems()), 
           t -> showError()
         );
 
-## Map
+## subscribe
+{:.top170}
+
+    public final Subscription subscribe(
+      final Action1<? super T> onNext, 
+      final Action1<Throwable> onError) {
+        //...
+    }
+
+## onNext | onError
+{:.top120}
+
+![marble](pictures/nextComplete1.png)
+
+![marble](pictures/error1.png)
+
+## onNext* (onComplete | onError)?
+{:.top120}
+
+![marble](pictures/nextComplete2.png)
+
+![marble](pictures/error2.png)
+
+## Observable creation
+
+    Observable.just(1, 2, 3);
+
+## Observable creation
+
+    Observable.just(1, 2, 3);
+    Observable.error(new IOException());
+
+## Observable creation
+
+    Observable.just(1, 2, 3);
+    Observable.error(new IOException());
+    Observable.interval(1, TimeUnit.SECONDS);
+
+## Observable creation
+
+    Observable.just(1, 2, 3);
+    Observable.error(new IOException());
+    Observable.interval(1, TimeUnit.SECONDS);
+
+    Observable.create(subscriber -> {
+      try {
+        subscriber.onNext(createFirstValue());
+        subscriber.onNext(createSecondValue());
+        subscriber.onCompleted();
+      } catch (Throwable t) {
+        subscriber.onError(t);
+      }
+    });
+
+## map
+{:.top100}
 
 ![marble](pictures/map.png)
 
-## Map
+## map
 
     service.getTopUsers()
       .subscribe(r -> adapter.addAll(r.getItems()));
 
-## Map
+## map
 
     service.getTopUsers()
       .subscribe(r -> adapter.addAll(r.getItems()));
@@ -294,7 +447,7 @@ style: |
         <mark>.map(r -> r.getItems())</mark>
         .subscribe(items -> adapter.addAll(items));
 
-## Map
+## map
 
     service.getTopUsers()
       .subscribe(r -> adapter.addAll(r.getItems()));
@@ -304,14 +457,15 @@ style: |
         .subscribe(items -> adapter.addAll(items));
 
     service.getTopUsers()
-        .map(UserResponse::getItems)
-        .subscribe(adapter::addAll);
+        .map(<mark>UserResponse::getItems</mark>)
+        .subscribe(<mark>adapter::addAll</mark>);
 
-## FlatMap
+## flatMap
+{:.top100}
 
 ![marble](pictures/flatMap.png)
 
-## FlatMap
+## flatMap
 
     <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
     <mark class="comment">    User user) {
@@ -326,7 +480,7 @@ style: |
     <mark class="comment">      );</mark>
     <mark class="comment">}</mark>
 
-## FlatMap
+## flatMap
 
     <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
     <mark class="comment">    User user) {
@@ -341,7 +495,7 @@ style: |
           );
     <mark class="comment">}</mark>
 
-## FlatMap
+## flatMap
 
     <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
     <mark class="comment">    User user) {
@@ -356,14 +510,14 @@ style: |
           );
     <mark class="comment">}</mark>
 
-## FlatMap
+## flatMap
 
     private Observable<UserStats> loadRepoStats(
         User user) {
-      return service.getTags(user.getId())
+      return service.<mark>getTags</mark>(user.getId())
           .map(TagResponse::getItems)
           .flatMap(tags ->
-              service.getBadges(user.getId())
+              service.<mark>getBadges</mark>(user.getId())
                   .map(BadgeResponse::getItems)
                   .map(badges -> 
                     new UserStats(user, tags, badges)
@@ -371,31 +525,36 @@ style: |
           );
     }
 
-## FlatMap
+## flatMap
+{:.top120}
 
     service
         .getTopUsers()
 
-## FlatMap
+## flatMap
+{:.top120}
 
     service
         .getTopUsers()
         .flatMap(r -> Observable.from(r.getItems()))
 
-## FlatMap
+## flatMap
+{:.top120}
 
     service
         .getTopUsers()
         .flatMapIterable(UserResponse::getItems)
 
-## FlatMap
+## flatMap
+{:.top120}
 
     service
         .getTopUsers()
         .flatMapIterable(UserResponse::getItems)
         .limit(5)
 
-## FlatMap
+## flatMap
+{:.top120}
 
     service
         .getTopUsers()
@@ -403,7 +562,8 @@ style: |
         .limit(5)
         .flatMap(this::loadRepoStats)
 
-## FlatMap
+## flatMap
+{:.top120}
 
     service
         .getTopUsers()
@@ -412,7 +572,8 @@ style: |
         .flatMap(this::loadRepoStats)
         .toList();
 
-## FlatMap implementation
+## flatMap source code
+{:.top120}
 
     public final <R> Observable<R> flatMap(
           Func1<
@@ -422,11 +583,13 @@ style: |
       <mark>return merge(map(func));</mark>
     }
 
-## ConcatMap
+## concatMap
+{:.top100}
 
 ![marble](pictures/concatMap.png)
 
-## ConcatMap implementation
+## concatMap source code
+{:.top120}
 
     public final <R> Observable<R> concatMap(
           Func1<
@@ -436,7 +599,8 @@ style: |
         <mark>return concat(map(func));</mark>
     }
 
-## FlatMap
+## concatMap
+{:.top120}
 
     service
         .getTopUsers()
@@ -450,6 +614,7 @@ style: |
 ![marble](pictures/zip.png)
 
 ## flatMap -> zip
+{:.top100}
 
     service.getTags(user.getId())
         .map(TagResponse::getItems)
@@ -462,6 +627,7 @@ style: |
         );
 
 ## flatMap -> zip
+{:.top100}
 
     Observable.zip(
         <mark class="comment">service.getTags(user.getId())</mark>
@@ -473,6 +639,7 @@ style: |
     );        
 
 ## flatMap -> zip
+{:.top100}
 
     Observable.zip(
         <mark>service.getTags(user.getId())</mark>
@@ -484,6 +651,7 @@ style: |
     );        
 
 ## flatMap -> zip
+{:.top100}
 
     Observable.zip(
         service.getTags(user.getId())
@@ -495,6 +663,7 @@ style: |
     );        
 
 ## flatMap -> zip
+{:.top100}
 
     Observable.zip(
         service.getTags(user.getId())
@@ -506,21 +675,172 @@ style: |
     );        
 
 ## flatMap -> zip
+{:.top100}
 
     Observable.zip(
-        service.getTags(user.getId())
+        service.<mark>getTags</mark>(user.getId())
           .map(TagResponse::getItems),
-        service.getBadges(user.getId())
+        service.<mark>getBadges</mark>(user.getId())
           .map(BadgeResponse::getItems),
         (tags, badges) -> 
           new UserStats(user, tags, badges)
     );        
 
-## subscription
+## Subscription
 
-## cold/hot
+    Observable
+      .interval(1, TimeUnit.SECONDS)
+      .timestamp()
+      .subscribe(System.out::println);
 
-## ciclo di vita activity?
+## Subscription
+
+    Subscription subscription = Observable
+      .interval(1, TimeUnit.SECONDS)
+      .timestamp()
+      .subscribe(System.out::println);
+
+    Thread.sleep(2500);
+
+    subscription.unsubscribe();
+
+## Subscription
+
+    Subscription subscription = Observable
+      .interval(1, TimeUnit.SECONDS)
+      .timestamp()
+      .subscribe(System.out::println);
+
+    Thread.sleep(2500);
+
+    subscription.unsubscribe();
+
+Timestamped(timestampMillis = 1429360406807, value = 0)
+Timestamped(timestampMillis = 1429360407805, value = 1)
+
+## How many requests?
+
+    Observable<List<User>> observable = 
+      service.<mark>getTopUsers</mark>().map(UserResponse::getItems);
+
+    Subscription s1 = observable.<mark>subscribe</mark>(
+      System.out::println, Throwable::printStackTrace);
+    Subscription s2 = observable.<mark>subscribe</mark>(
+      System.out::println, Throwable::printStackTrace);
+
+## replay
+
+    Observable<List<User>> observable = 
+      service.<mark>getTopUsers</mark>().map(UserResponse::getItems);
+
+    ConnectableObservable<List<User>> replayObservable = 
+      observable.<mark>replay(1)</mark>;
+
+    Subscription s1 = replayObservable.subscribe(
+      System.out::println, Throwable::printStackTrace);
+    Subscription s2 = replayObservable.subscribe(
+      System.out::println, Throwable::printStackTrace);
+
+    Subscription s3 = replayObservable.<mark>connect</mark>();
+
+
+## Activity lifecycle
+
+    @Override public View onCreateView(...) {
+      ...
+      retainedFragment = RetainedFragment
+        .getOrCreate(getActivity());
+
+      if (retainedFragment.get() == null) {
+        Observable<List<T>> observable = loadItems()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+        retainedFragment.bind(observable.replay(1));
+      }
+      ...
+    }
+
+## Activity lifecycle
+
+    @Override public void onResume() {
+      super.onResume();
+      subscription = retainedFragment.get()
+        .subscribe(
+          this::showDataInList, 
+          t -> showError()
+        );
+    }
+
+    @Override public void onPause() {
+      super.onPause();
+      subscription.unsubscribe();
+    }
+
+## RetainedFragment
+{:.smallSize}
+
+    public class RetainedFragment<T> extends Fragment {
+      private Subscription connectableSubscription = Subscriptions.empty();
+      private ConnectableObservable<T> observable;
+      public RetainedFragment() {
+          <mark>setRetainInstance(true);</mark>
+      }
+      public void bind(ConnectableObservable<T> observable) {
+          this.observable = observable;
+          connectableSubscription = observable.connect();
+      }
+      @Override public void onDestroy() {
+          super.onDestroy();
+          connectableSubscription.unsubscribe();
+      }
+      public Observable<T> get() {
+          return observable;
+      }
+    }    
+
+## RetainedFragment
+{:.smallSize}
+
+    public class RetainedFragment<T> extends Fragment {
+      private Subscription connectableSubscription = Subscriptions.empty();
+      private ConnectableObservable<T> observable;
+      public RetainedFragment() {
+          <mark>setRetainInstance(true);</mark>
+      }
+      public void bind(ConnectableObservable<T> observable) {
+          this.observable = observable;
+          connectableSubscription = <mark>observable.connect();</mark>
+      }
+      @Override public void onDestroy() {
+          super.onDestroy();
+          connectableSubscription.unsubscribe();
+      }
+      public Observable<T> get() {
+          return observable;
+      }
+    }    
+
+## RetainedFragment
+{:.smallSize}
+
+    public class RetainedFragment<T> extends Fragment {
+      private Subscription connectableSubscription = Subscriptions.empty();
+      private ConnectableObservable<T> observable;
+      public RetainedFragment() {
+          <mark>setRetainInstance(true);</mark>
+      }
+      public void bind(ConnectableObservable<T> observable) {
+          this.observable = observable;
+          connectableSubscription = <mark>observable.connect();</mark>
+      }
+      @Override public void onDestroy() {
+          super.onDestroy();
+          <mark>connectableSubscription.unsubscribe();</mark>
+      }
+      public Observable<T> get() {
+          return observable;
+      }
+    }    
 
 ## Shower Key Features
 
