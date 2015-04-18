@@ -17,5 +17,5 @@ author:
         # url:  http://example.com/
 
 #fork_url: https://github.com/shower/shower
-progress: false
+progress: true
 line_numbers: true

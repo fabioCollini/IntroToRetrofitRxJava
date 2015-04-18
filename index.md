@@ -4,6 +4,9 @@ layout: ribbon
 
 style: |
 
+    @media screen .full .progress div {
+      height: 6px;
+    }
     #Cover h2 {
         margin:30px 0 0;
         color:#FFF;
@@ -55,17 +58,25 @@ style: |
       background: 0 0;
       color: #999;
     }
-    #ego img {
+    .ego img {
       vertical-align: middle;
       margin-right: 4px;
     }
-    #ego a {
+    .ego a {
       border-bottom: 0px;
       color: #666666;
     }
-    .slide.top100 pre, .slide.top100 p { margin-top: 100px; }
-    .slide.top120 pre, .slide.top120 p { margin-top: 120px; }
-    .slide.top170 pre, .slide.top170 p { margin-top: 170px; }
+    .slide.top100 pre, .slide.top100 p, .slide.top100 ul { margin-top: 100px; }
+    .slide.top120 pre, .slide.top120 p, .slide.top120 ul { margin-top: 120px; }
+    .slide.top170 pre, .slide.top170 p, .slide.top170 ul { margin-top: 170px; }
+    .demo p {
+      margin: 0;
+      text-align: center;
+    }
+    .demo p a {
+      border-bottom: 0px;
+      color: #666666;
+    }
 ---
 
 # Introduction to Retrofit and RxJava {#Cover}
@@ -80,7 +91,7 @@ style: |
 
 ## Ego slide
 
-<div id="ego">
+<div class="ego">
 <img style="float:right; margin-right: 40px" src="pictures/androidAvanzato.png">
 <div><img src="pictures/twitter.png"><a href="https://twitter.com/fabioCollini">@fabioCollini</a></div>
 <div><img src="pictures/linkedin.png"><a href="http://linkedin.com/in/fabiocollini">linkedin.com/in/fabiocollini</a></div>
@@ -94,20 +105,27 @@ style: |
 
 
 ## Retrofit
+{:.top100}
 
 - Turns your REST API into a Java interface
 - Simple to use
 - JSON conversion using Gson
 - Custom converters
-- Logging
+- &nbsp;...
 
 ## RxJava is not so simple...
 {:.top100}
 
 ![](pictures/rx_twitter.png)
 
+## Demo project
+{:.demo}
+
+![](pictures/demo.png)
+
+[github.com/fabioCollini/IntroToRetrofitRxJava](https://github.com/fabioCollini/IntroToRetrofitRxJava/)
+
 ## HTTP request definition
-{:.top170}
 
     public interface StackOverflowService {
 
@@ -115,6 +133,23 @@ style: |
       UserResponse getTopUsers();
 
     }
+
+## HTTP request definition
+
+    public interface StackOverflowService {
+
+      @GET("/users")
+      UserResponse getTopUsers();
+
+    }
+
+    public class UserResponse {
+      private List<User> items;
+      public List<User> getItems() {
+        return items;
+      }
+    }
+
 
 ## Service creation
 
@@ -158,19 +193,6 @@ style: |
         request.addQueryParam("key", "...");
       })
       .build();
-    restAdapter.setLogLevel(<mark>LogLevel.BASIC</mark>);
-
-## Service creation
-
-    RestAdapter restAdapter = 
-      new RestAdapter.Builder()
-      .setEndpoint("http://api.stackexchange.com/2.2/")
-      .setRequestInterceptor(request -> {
-        request.addQueryParam("site", "stackoverflow");
-        request.addQueryParam("key", "...");
-      })
-      .build();
-    restAdapter.setLogLevel(RestAdapter.LogLevel.BASIC);
     <mark>StackOverflowService service = </mark>
       <mark>restAdapter.create(StackOverflowService.class);</mark>
 
@@ -190,11 +212,11 @@ style: |
 ## Request parameters
 {:.top170}
 
-    @GET("/users/{userId}/top-tags") 
-    TagResponse getTags(@Path("userId") int userId);
+    @GET("/users/<mark>{userId}</mark>/top-tags") 
+    TagResponse getTags(@Path("userId") int <mark>userId</mark>);
   
-    @GET("/users/{userId}/badges") 
-    BadgeResponse getBadges(@Path("userId") int userId);
+    @GET("/users/<mark>{userId}</mark>/badges") 
+    BadgeResponse getBadges(@Path("userId") int <mark>userId</mark>);
 
 ## Other annotations
 
@@ -378,8 +400,8 @@ style: |
 {:.top170}
 
     public final Subscription subscribe(
-      final Action1<? super T> onNext, 
-      final Action1<Throwable> onError) {
+      final Action1<? super T> <mark>onNext</mark>, 
+      final Action1<Throwable> <mark>onError</mark>) {
         //...
     }
 
@@ -404,17 +426,25 @@ style: |
 ## Observable creation
 
     Observable.just(1, 2, 3);
+    Observable.from(Arrays.asList("A", "B", "C", "D"));
+
+## Observable creation
+
+    Observable.just(1, 2, 3);
+    Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
 
 ## Observable creation
 
     Observable.just(1, 2, 3);
+    Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
     Observable.interval(1, TimeUnit.SECONDS);
 
 ## Observable creation
 
     Observable.just(1, 2, 3);
+    Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
     Observable.interval(1, TimeUnit.SECONDS);
 
@@ -689,9 +719,20 @@ style: |
 ## Subscription
 
     Observable
+      .<mark>interval</mark>(1, TimeUnit.SECONDS)
+      .timestamp()
+      .subscribe(System.out::println);
+
+## Subscription
+
+    Subscription <mark>subscription</mark> = Observable
       .interval(1, TimeUnit.SECONDS)
       .timestamp()
       .subscribe(System.out::println);
+
+    Thread.sleep(2500);
+
+    subscription.<mark>unsubscribe</mark>();
 
 ## Subscription
 
@@ -704,24 +745,13 @@ style: |
 
     subscription.unsubscribe();
 
-## Subscription
-
-    Subscription subscription = Observable
-      .interval(1, TimeUnit.SECONDS)
-      .timestamp()
-      .subscribe(System.out::println);
-
-    Thread.sleep(2500);
-
-    subscription.unsubscribe();
-
-Timestamped(timestampMillis = 1429360406807, value = 0)
-Timestamped(timestampMillis = 1429360407805, value = 1)
+Timestamped(timestampMillis = 142936040<mark>6</mark>807, value = <mark>0</mark>)
+Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>)
 
 ## How many requests?
 
-    Observable<List<User>> observable = 
-      service.<mark>getTopUsers</mark>().map(UserResponse::getItems);
+    Observable<UserResponse> observable = 
+      service.<mark>getTopUsers</mark>();
 
     Subscription s1 = observable.<mark>subscribe</mark>(
       System.out::println, Throwable::printStackTrace);
@@ -730,10 +760,10 @@ Timestamped(timestampMillis = 1429360407805, value = 1)
 
 ## replay
 
-    Observable<List<User>> observable = 
-      service.<mark>getTopUsers</mark>().map(UserResponse::getItems);
+    Observable<UserResponse> observable = 
+      service.<mark>getTopUsers</mark>();
 
-    ConnectableObservable<List<User>> replayObservable = 
+    ConnectableObservable<UserResponse> replayObservable = 
       observable.<mark>replay(1)</mark>;
 
     Subscription s1 = replayObservable.subscribe(
@@ -755,25 +785,25 @@ Timestamped(timestampMillis = 1429360407805, value = 1)
         Observable<List<T>> observable = loadItems()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
-        retainedFragment.bind(observable.replay(1));
+        retainedFragment.<mark>bind</mark>(observable.<mark>replay(1)</mark>);
       }
       ...
     }
 
 ## Activity lifecycle
 
-    @Override public void onResume() {
+    @Override public void <mark>onResume</mark>() {
       super.onResume();
       subscription = retainedFragment.get()
-        .subscribe(
+        .<mark>subscribe</mark>(
           this::showDataInList, 
           t -> showError()
         );
     }
 
-    @Override public void onPause() {
+    @Override public void <mark>onPause</mark>() {
       super.onPause();
-      subscription.unsubscribe();
+      subscription.<mark>unsubscribe</mark>();
     }
 
 ## RetainedFragment
@@ -842,77 +872,20 @@ Timestamped(timestampMillis = 1429360407805, value = 1)
       }
     }    
 
-## Shower Key Features
+## Thanks for your attention!
 
-1. Built on HTML, CSS and vanilla JavaScript
-2. All modern browsers are supported
-3. Slide themes are separated from engine
-4. Fully keyboard accessible
-5. Printable to PDF
+<div class="ego">
+<img style="float:right; margin-right: -20px" src="pictures/androidAvanzato.png">
+<div style="font-size: 30px;">Questions?</div>
+<div>&nbsp;</div>
+<div><a href="https://github.com/fabioCollini/IntroToRetrofitRxJava/">github.com/fabioCollini/IntroToRetrofitRxJava</a></div>
+<div>&nbsp;</div>
+<div><img src="pictures/twitter.png"><a href="https://twitter.com/fabioCollini">@fabioCollini</a></div>
+<div><img src="pictures/linkedin.png"><a href="http://linkedin.com/in/fabiocollini">linkedin.com/in/fabiocollini</a></div>
+<div><img src="pictures/cosenonjaviste.png"><a href="http://www.cosenonjaviste.it">cosenonjaviste.it</a></div>
+</div>
 
-{:.note}
-Shower ['ʃəuə] noun. A person or thing that shows.
 
-
-## Plain Text on Your Slides
-
-Lorem ipsum dolor sit amet, consectetur [adipisicing](#all-kind-of-lists) elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, *quis nostrud* exercitation ullamco laboris **nisi ut aliquip** ex ea commodo consequat. Duis aute irure <i>dolor</i> in reprehenderit in voluptate velit esse cillum <b>dolore</b> eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in `<culpa>` qui officia deserunt mollit anim id est laborum.
-
-## All Kind of Lists
-
-1. Simple lists are marked with bullets
-2. Ordered lists begin with a number
-3. You can even nest lists one inside another
-    - Or mix their types
-    - But do not go too far
-    - Otherwise audience will be bored
-4. Look, seven rows exactly!
-
-## Serious Citations
-
-<figure markdown="1">
-
-> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.
-
-<figcaption>Marcus Tullius Cicero</figcaption>
-</figure>
-
-## Code Samples
-
-    <!DOCTYPE html>
-    <html lang="en">
-    <mark><head></mark> <mark class="comment"><!--Comment--></mark>
-        <title>Shower</title>
-        <meta charset="<mark class="important">UTF-8</mark>">
-        <link rel="stylesheet" href="screen.css">
-    <mark></head></mark>
-
-## Even Tables
-
-|  Locavore      | Umami       | Helvetica | Vegan     |
-+----------------|-------------|-----------|-----------+
-|* Fingerstache *| Kale        | Chips     | Keytar    |
-|* Sriracha     *| Gluten-free | Ennui     | Keffiyeh  |
-|* Thundercats  *| Jean        | Shorts    | Biodiesel |
-|* Terry        *| Richardson  | Swag      | Blog      |
-
-It’s good to have information organized.
-
-## Pictures
-{:.cover #Picture}
-
-![](pictures/picture.jpg)
-<!-- photo by John Carey, fiftyfootshadows.net -->
-
-## **You can even shout this way**
-
-## Inner Navigation
-
-1. Lets you reveal list items one by one
-2. …To keep some key points
-3. …In secret from audience
-4. …But it will work only once
-5. …Nobody wants to see the same joke twice
-
-## ![](http://shwr.me/pictures/logo.svg) [See more on GitHub](https://github.com/shower/shower/)
-{:.shout #SeeMore}
+//flatmap spiegare meglio
+//dopo flatmap mostrare gli elementi non ordinati
+//cold - hot
