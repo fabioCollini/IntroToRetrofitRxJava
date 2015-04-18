@@ -447,7 +447,6 @@ style: |
     Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
     Observable.interval(1, TimeUnit.SECONDS);
-
     Observable.create(subscriber -> {
       try {
         subscriber.onNext(createFirstValue());
@@ -457,6 +456,43 @@ style: |
         subscriber.onError(t);
       }
     });
+
+## Observable in action
+
+    public Subscription subscribe(
+      Action1<? super T> onNext, 
+      Action1<Throwable> onError, 
+      Action0 onComplete
+    );
+
+## Observable in action
+
+    public Subscription subscribe(
+      Action1<? super T> onNext, 
+      Action1<Throwable> onError, 
+      Action0 onComplete
+    );
+
+    Observable.just(1, 2, 3).subscribe(
+        System.out::println, 
+        Throwable::printStackTrace, 
+        () -> System.out.println("Completed")
+      );
+
+## Observer
+
+    Observable.just(1, 2, 3)
+      .subscribe(new Observer<Integer>() {
+          @Override public void onNext(Integer i) {
+              System.out.println(i);
+          }
+          @Override public void onError(Throwable t) {
+              t.printStackTrace();
+          }
+          @Override public void onCompleted() {
+              System.out.println("Completed");
+          }
+      });
 
 ## map
 {:.top100}
@@ -490,117 +526,189 @@ style: |
         .map(<mark>UserResponse::getItems</mark>)
         .subscribe(<mark>adapter::addAll</mark>);
 
+## zip
+
+![marble](pictures/zip.png)
+
+## zip
+{:.top100}
+
+    Observable.zip(
+        <mark class="comment">service.getTags(user.getId()),</mark>
+        <mark class="comment">service.getBadges(user.getId()),</mark>
+        <mark class="comment">(tags, badges) -> </mark>
+        <mark class="comment">  new UserStats(</mark>
+        <mark class="comment">    user, tags.getItems(), badges.getItems())</mark>
+        <mark class="comment">  )</mark>
+    );        
+
+## zip
+{:.top100}
+
+    Observable.zip(
+        <mark>service.getTags(user.getId()),</mark>
+        <mark class="comment">service.getBadges(user.getId()),</mark>
+        <mark class="comment">(tags, badges) -> </mark>
+        <mark class="comment">  new UserStats(</mark>
+        <mark class="comment">    user, tags.getItems(), badges.getItems())</mark>
+        <mark class="comment">  )</mark>
+    );        
+
+## zip
+{:.top100}
+
+    Observable.zip(
+        service.getTags(user.getId()),
+        <mark>service.getBadges(user.getId()),</mark>
+        <mark class="comment">(tags, badges) -> </mark>
+        <mark class="comment">  new UserStats(</mark>
+        <mark class="comment">    user, tags.getItems(), badges.getItems())</mark>
+        <mark class="comment">  )</mark>
+    );        
+
+## zip
+{:.top100}
+
+    Observable.zip(
+        service.getTags(user.getId()),
+        service.getBadges(user.getId()),
+        <mark>(tags, badges) -> </mark>
+        <mark>  new UserStats(</mark>
+        <mark>    user, tags.getItems(), badges.getItems())</mark>
+        <mark>  )</mark>
+    );        
+
+## zip
+{:.top100}
+
+    Observable.zip(
+        service.<mark>getTags</mark>(user.getId()),
+        service.<mark>getBadges</mark>(user.getId()),
+        (tags, badges) -> 
+          new UserStats(
+            user, tags.getItems(), badges.getItems()
+          )
+    );        
+
+## zip
+{:.top100}
+
+    Observable.zip(
+        service.<mark>getTags</mark>(user.getId())
+          .map(TagResponse::getItems),
+        service.<mark>getBadges</mark>(user.getId())
+          .map(BadgeResponse::getItems),
+        (tags, badges) -> 
+          new UserStats(user, tags, badges)
+    );        
+
+## Multi value map
+
+        Observable.just(1, 2, 3).<mark>map</mark>(
+            i -> Observable.just(i * 10, i * 10 + 1)
+        );
+
+## Multi value map
+
+    <mark>Observable<Observable<Integer>></mark> observable =
+        Observable.just(1, 2, 3).<mark>map</mark>(
+            i -> Observable.just(i * 10, i * 10 + 1)
+        );
+
+## Multi value map
+
+    Observable<Observable<Integer>> observable =
+        Observable.just(1, 2, 3).map(
+            i -> Observable.just(i * 10, i * 10 + 1)
+        );
+
+    [1, 2, 3]
+
+    [[10, 11], [20, 21], [30, 31]]
+
 ## flatMap
 {:.top100}
 
 ![marble](pictures/flatMap.png)
 
 ## flatMap
+{:.top120}
 
-    <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
-    <mark class="comment">    User user) {
-    <mark class="comment">  return</mark> service.getTags(user.getId())
-          .map(TagResponse::getItems)
-    <mark class="comment">      .flatMap(tags -></mark>
-    <mark class="comment">          service.getBadges(user.getId())</mark>
-    <mark class="comment">              .map(BadgeResponse::getItems)</mark>
-    <mark class="comment">              .map(badges -> </mark>
-    <mark class="comment">                new UserStats(user, tags, badges)</mark>
-    <mark class="comment">              )</mark>
-    <mark class="comment">      );</mark>
-    <mark class="comment">}</mark>
+    <mark>Observable<Integer></mark> observable =
+        Observable.just(1, 2, 3).<mark>flatMap</mark>(
+            i -> Observable.just(i * 10, i * 10 + 1)
+        );
+
+    [1, 2, 3]
+
+    [10, 11, 20, 21, 30, 31]
 
 ## flatMap
+{:.top120}
 
-    <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
-    <mark class="comment">    User user) {
-    <mark class="comment">  return</mark> service.getTags(user.getId())
-          .map(TagResponse::getItems)
-          .flatMap(tags ->
-    <mark class="comment">          service.getBadges(user.getId())</mark>
-    <mark class="comment">              .map(BadgeResponse::getItems)</mark>
-    <mark class="comment">              .map(badges -> </mark>
-    <mark class="comment">                new UserStats(user, tags, badges)</mark>
-    <mark class="comment">              )</mark>
-          );
-    <mark class="comment">}</mark>
+    Observable<Profile> observable = 
+      service.<mark>login</mark>(userName, password)
+        .flatMap(token -> service.<mark>getProfile</mark>(token));
 
 ## flatMap
+{:.top120}
 
-    <mark class="comment">private Observable<UserStats> loadRepoStats(</mark>
-    <mark class="comment">    User user) {
-    <mark class="comment">  return</mark> service.getTags(user.getId())
-          .map(TagResponse::getItems)
-          .flatMap(tags ->
-              service.getBadges(user.getId())
-                  .map(BadgeResponse::getItems)
-    <mark class="comment">              .map(badges -> </mark>
-    <mark class="comment">                new UserStats(user, tags, badges)</mark>
-    <mark class="comment">              )</mark>
-          );
-    <mark class="comment">}</mark>
+    <mark class="comment">Observable<Profile> observable = </mark>
+    <mark class="comment">  service.login(userName, password)</mark>
+    <mark class="comment">    .flatMap(token -> service.getProfile(token));</mark>
 
-## flatMap
-
-    private Observable<UserStats> loadRepoStats(
-        User user) {
-      return service.<mark>getTags</mark>(user.getId())
-          .map(TagResponse::getItems)
-          .flatMap(tags ->
-              service.<mark>getBadges</mark>(user.getId())
-                  .map(BadgeResponse::getItems)
-                  .map(badges -> 
-                    new UserStats(user, tags, badges)
-                  )
-          );
-    }
+    Observable<Profile> observable = 
+      service.<mark>login</mark>(userName, password)
+        .flatMap(service::<mark>getProfile</mark>);
 
 ## flatMap
 {:.top120}
 
     service
-        .getTopUsers()
+      .getTopUsers()//1<UserResponse>
 
 ## flatMap
 {:.top120}
 
     service
-        .getTopUsers()
-        .flatMap(r -> Observable.from(r.getItems()))
+      .getTopUsers()//1<UserResponse>
+      .flatMap(r -> Observable.from(r.getItems()))
+      //20<User>
 
 ## flatMap
 {:.top120}
 
     service
-        .getTopUsers()
-        .flatMapIterable(UserResponse::getItems)
+      .getTopUsers()//1<UserResponse>
+      .flatMapIterable(UserResponse::getItems)//20<User>
 
 ## flatMap
 {:.top120}
 
     service
-        .getTopUsers()
-        .flatMapIterable(UserResponse::getItems)
-        .limit(5)
+      .getTopUsers()//1<UserResponse>
+      .flatMapIterable(UserResponse::getItems)//20<User>
+      .limit(5)//5<User>
 
 ## flatMap
 {:.top120}
 
     service
-        .getTopUsers()
-        .flatMapIterable(UserResponse::getItems)
-        .limit(5)
-        .flatMap(this::loadRepoStats)
+      .getTopUsers()//1<UserResponse>
+      .flatMapIterable(UserResponse::getItems)//20<User>
+      .limit(5)//5<User>
+      .flatMap(this::loadRepoStats)//5<UserStats>
 
 ## flatMap
 {:.top120}
 
     service
-        .getTopUsers()
-        .flatMapIterable(UserResponse::getItems)
-        .limit(5)
-        .flatMap(this::loadRepoStats)
-        .toList();
+      .getTopUsers()//1<UserResponse>
+      .flatMapIterable(UserResponse::getItems)//20<User>
+      .limit(5)//5<User>
+      .flatMap(this::loadRepoStats)//5<UserStats>
+      .toList();//1<List<UserStats>>
+
 
 ## flatMap source code
 {:.top120}
@@ -638,83 +746,6 @@ style: |
         .limit(5)
         .<mark>concatMap</mark>(this::loadRepoStats)
         .toList();
-
-## zip
-
-![marble](pictures/zip.png)
-
-## flatMap -> zip
-{:.top100}
-
-    service.getTags(user.getId())
-        .map(TagResponse::getItems)
-        .flatMap(tags ->
-            service.getBadges(user.getId())
-                .map(BadgeResponse::getItems)
-                .map(badges -> 
-                  new UserStats(user, tags, badges)
-                )
-        );
-
-## flatMap -> zip
-{:.top100}
-
-    Observable.zip(
-        <mark class="comment">service.getTags(user.getId())</mark>
-        <mark class="comment">  .map(TagResponse::getItems),</mark>
-        <mark class="comment">service.getBadges(user.getId())</mark>
-        <mark class="comment">  .map(BadgeResponse::getItems),</mark>
-        <mark class="comment">(tags, badges) -> </mark>
-        <mark class="comment">  new UserStats(user, tags, badges)</mark>
-    );        
-
-## flatMap -> zip
-{:.top100}
-
-    Observable.zip(
-        <mark>service.getTags(user.getId())</mark>
-        <mark>  .map(TagResponse::getItems),</mark>
-        <mark class="comment">service.getBadges(user.getId())</mark>
-        <mark class="comment">  .map(BadgeResponse::getItems),</mark>
-        <mark class="comment">(tags, badges) -> </mark>
-        <mark class="comment">  new UserStats(user, tags, badges)</mark>
-    );        
-
-## flatMap -> zip
-{:.top100}
-
-    Observable.zip(
-        service.getTags(user.getId())
-          .map(TagResponse::getItems),
-        <mark>service.getBadges(user.getId())</mark>
-        <mark>  .map(BadgeResponse::getItems),</mark>
-        <mark class="comment">(tags, badges) -> </mark>
-        <mark class="comment">  new UserStats(user, tags, badges)</mark>
-    );        
-
-## flatMap -> zip
-{:.top100}
-
-    Observable.zip(
-        service.getTags(user.getId())
-          .map(TagResponse::getItems),
-        service.getBadges(user.getId())
-          .map(BadgeResponse::getItems),
-        <mark>(tags, badges) -> </mark>
-        <mark>  new UserStats(user, tags, badges)</mark>
-    );        
-
-## flatMap -> zip
-{:.top100}
-
-    Observable.zip(
-        service.<mark>getTags</mark>(user.getId())
-          .map(TagResponse::getItems),
-        service.<mark>getBadges</mark>(user.getId())
-          .map(BadgeResponse::getItems),
-        (tags, badges) -> 
-          new UserStats(user, tags, badges)
-    );        
 
 ## Subscription
 
@@ -758,7 +789,20 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
     Subscription s2 = observable.<mark>subscribe</mark>(
       System.out::println, Throwable::printStackTrace);
 
-## replay
+## How many requests?
+
+    Observable<UserResponse> observable = 
+      service.<mark>getTopUsers</mark>();
+
+    Subscription s1 = observable.<mark>subscribe</mark>(
+      System.out::println, Throwable::printStackTrace);
+    Subscription s2 = observable.<mark>subscribe</mark>(
+      System.out::println, Throwable::printStackTrace);
+
+- 2 requests
+- Retrofit Observables are <mark>cold</mark>
+
+## Hot observables
 
     Observable<UserResponse> observable = 
       service.<mark>getTopUsers</mark>();
@@ -884,8 +928,3 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
 <div><img src="pictures/linkedin.png"><a href="http://linkedin.com/in/fabiocollini">linkedin.com/in/fabiocollini</a></div>
 <div><img src="pictures/cosenonjaviste.png"><a href="http://www.cosenonjaviste.it">cosenonjaviste.it</a></div>
 </div>
-
-
-//flatmap spiegare meglio
-//dopo flatmap mostrare gli elementi non ordinati
-//cold - hot
