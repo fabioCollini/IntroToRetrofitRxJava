@@ -34,6 +34,4 @@ dependencies {
     compile 'com.facebook.stetho:stetho-okhttp:1.1.0'
     compile 'io.reactivex:rxandroid-framework:0.24.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'org.parceler:parceler-api:0.2.16'
-    provided 'org.parceler:parceler:0.2.16'
 }

@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import org.parceler.Parcels;
-
 import java.util.List;
 
 import it.cosenonjaviste.introtoretrofitrxjava.HtmlAdapter;
@@ -23,14 +21,13 @@ import rx.subscriptions.Subscriptions;
 
 public abstract class BaseRxFragment<T> extends Fragment {
 
-    public static final String ITEMS = "items";
     protected StackOverflowService service = ServiceFactory.createService();
     private HtmlAdapter adapter;
-    private Subscription subscription = Subscriptions.empty();
-    private RetainedFragment<List<T>> retainedFragment;
     private ListView listView;
     private View progressLayout;
     private View errorLayout;
+    private RetainedFragment<List<T>> retainedFragment;
+    private Subscription subscription = Subscriptions.empty();
 
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list, container, false);
@@ -45,44 +42,20 @@ public abstract class BaseRxFragment<T> extends Fragment {
 
         retainedFragment = RetainedFragment.getOrCreate(getActivity(), "retained");
 
-        if (savedInstanceState != null) {
-            List<T> savedItems = Parcels.unwrap(savedInstanceState.getParcelable(ITEMS));
-            if (savedItems != null && !savedItems.isEmpty()) {
-                showDataInList(savedItems);
-            } else if (retainedFragment.isRunning()) {
-                showProgress();
-            } else {
-                showError();
-            }
-        } else {
-            showProgress();
+        if (retainedFragment.get() == null) {
             Observable<List<T>> observable = loadItems()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
-            retainedFragment.bind(observable.replay());
+            retainedFragment.bind(observable.replay(1));
         }
 
         return view;
     }
 
-    @Override public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(ITEMS, Parcels.wrap(adapter.getItems()));
-    }
-
     @Override public void onResume() {
         super.onResume();
-        subscription = retainedFragment
-                .getObservable()
-                .finallyDo(retainedFragment::clear)
+        subscription = retainedFragment.get()
                 .subscribe(this::showDataInList, t -> showError());
-    }
-
-    private void showDataInList(List<T> items) {
-        adapter.addAll(items);
-        errorLayout.setVisibility(View.INVISIBLE);
-        listView.setVisibility(View.VISIBLE);
-        progressLayout.setVisibility(View.INVISIBLE);
     }
 
     @Override public void onPause() {
@@ -90,10 +63,11 @@ public abstract class BaseRxFragment<T> extends Fragment {
         subscription.unsubscribe();
     }
 
-    private void showProgress() {
+    private void showDataInList(List<T> items) {
+        adapter.addAll(items);
         errorLayout.setVisibility(View.INVISIBLE);
-        listView.setVisibility(View.INVISIBLE);
-        progressLayout.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.VISIBLE);
+        progressLayout.setVisibility(View.INVISIBLE);
     }
 
     private void showError() {

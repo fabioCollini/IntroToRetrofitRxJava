@@ -34,24 +34,12 @@ public class RetainedFragment<T> extends Fragment {
         return fragment;
     }
 
-    public boolean isRunning() {
-        return observable != null;
-    }
-
     public void bind(ConnectableObservable<T> observable) {
         this.observable = observable;
         connectableSubscription = observable.connect();
     }
 
-    public Observable<T> getObservable() {
-        if (observable == null) {
-            return Observable.empty();
-        }
+    public Observable<T> get() {
         return observable;
-    }
-
-    public void clear() {
-        observable = null;
-        connectableSubscription = Subscriptions.empty();
     }
 }
