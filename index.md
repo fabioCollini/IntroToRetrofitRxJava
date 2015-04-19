@@ -77,6 +77,9 @@ style: |
       border-bottom: 0px;
       color: #666666;
     }
+    #13 rxJava
+    #25 flatMap
+    #34 subscription
 ---
 
 # Introduction to Retrofit and RxJava {#Cover}
@@ -113,8 +116,18 @@ style: |
 - Custom converters
 - &nbsp;...
 
-## RxJava is not so simple...
+## RxJava
 {:.top100}
+
+<figure markdown="1">
+
+> 
+RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library for composing asynchronous and event-based programs by using observable sequences.
+
+<figcaption>github.com/ReactiveX/RxJava</figcaption>
+</figure>
+
+## RxJava is not simple...
 
 ![](pictures/rx_twitter.png)
 
@@ -164,23 +177,9 @@ style: |
 
 ## Service creation
 
-    RestAdapter restAdapter = 
-      new RestAdapter.Builder()
-      .setEndpoint("http://api.stackexchange.com/2.2/")
-      <mark>.setRequestInterceptor(request -> {</mark>
-        <mark>request.addQueryParam("site", "stackoverflow");</mark>
-        <mark>request.addQueryParam("key", "...");</mark>
-      <mark>})</mark>
-
-## Service creation
-
     <mark>RestAdapter restAdapter</mark> = 
       new RestAdapter.Builder()
       .setEndpoint("http://api.stackexchange.com/2.2/")
-      .setRequestInterceptor(request -> {
-        request.addQueryParam("site", "stackoverflow");
-        request.addQueryParam("key", "...");
-      })
       <mark>.build();</mark>
 
 ## Service creation
@@ -188,14 +187,22 @@ style: |
     RestAdapter restAdapter = 
       new RestAdapter.Builder()
       .setEndpoint("http://api.stackexchange.com/2.2/")
-      .setRequestInterceptor(request -> {
-        request.addQueryParam("site", "stackoverflow");
-        request.addQueryParam("key", "...");
-      })
       .build();
     <mark>StackOverflowService service = </mark>
       <mark>restAdapter.create(StackOverflowService.class);</mark>
 
+## Service creation
+
+    RestAdapter restAdapter = 
+      new RestAdapter.Builder()
+      .setEndpoint("http://api.stackexchange.com/2.2/")
+      <mark>.setRequestInterceptor(request -> {</mark>
+        <mark>request.addQueryParam("site", "stackoverflow");</mark>
+        <mark>request.addQueryParam("key", "...");</mark>
+      <mark>})</mark>
+      .build();
+    StackOverflowService service =
+      restAdapter.create(StackOverflowService.class);
 
 ## Synchronous request
 {:.top120}
@@ -210,13 +217,24 @@ style: |
     }
 
 ## Request parameters
-{:.top170}
 
     @GET("/users/<mark>{userId}</mark>/top-tags") 
     TagResponse getTags(@Path("userId") int <mark>userId</mark>);
   
     @GET("/users/<mark>{userId}</mark>/badges") 
     BadgeResponse getBadges(@Path("userId") int <mark>userId</mark>);
+
+## Request parameters
+
+    @GET("/users/{userId}/top-tags") 
+    TagResponse getTags(@Path("userId") int userId);
+  
+    @GET("/users/{userId}/badges") 
+    BadgeResponse getBadges(@Path("userId") int userId);
+
+service.getTags(<mark>12345</mark>);
+
+/users/<mark>12345</mark>/top-tags?site=stackoverflow&key=...
 
 ## Other annotations
 
@@ -292,8 +310,8 @@ style: |
 
     service.getTopUsers(new Callback<UserResponse>() {
       @Override public void success(
-          UserResponse repoResponse, Response r) {
-        <mark>List<User> users = repoResponse.getItems();</mark>
+          UserResponse userResponse, Response r) {
+        <mark>List<User> users = userResponse.getItems();</mark>
         <mark>if (users.size() > 5)</mark>
         <mark>  users = users.subList(0, 5);</mark>
         <mark>adapter.addAll(users);</mark>
@@ -307,8 +325,8 @@ style: |
 
     service.getTopUsers(new Callback<UserResponse>() {
       @Override public void success(
-          UserResponse repoResponse, Response r) {
-        List<User> users = repoResponse.getItems();
+          UserResponse userResponse, Response r) {
+        List<User> users = userResponse.getItems();
         if (users.size() > 5)
           users = users.subList(0, 5);
         adapter.addAll(users);
@@ -362,11 +380,13 @@ style: |
 
 ## RxJava in action
 
-    service
-      .<mark>getTopUsers()</mark>
-      .subscribe(new Action1<UserResponse>() {
+    service.<mark>getTopUsers()</mark>
+      .<mark>subscribe</mark>(new Action1<UserResponse>() {
         @Override public void call(UserResponse r) {
-          <mark>adapter.addAll(r.getItems());</mark>
+          <mark>List<User> users = r.getItems();</mark>
+          <mark>if (users.size() > 5)</mark>
+            <mark>users = users.subList(0, 5);</mark>
+          <mark>adapter.addAll(users);</mark>
         }
       }, new Action1<Throwable>() {
         @Override public void call(Throwable t) {
@@ -374,25 +394,33 @@ style: |
         }
       });
 
-## Retrolambda
-{:.top120}
+## Java 8 / Retrolambda
+{:.top100}
 
-    service
-        .<mark>getTopUsers()</mark>
-        .subscribe(
-          r -> <mark>adapter.addAll(r.getItems())</mark>, 
+    service.<mark>getTopUsers()</mark>
+        .<mark>subscribe</mark>(
+          r -> {
+            <mark>List<User> users = r.getItems();</mark>
+            <mark>if (users.size() > 5)</mark>
+              <mark>users = users.subList(0, 5);</mark>
+            <mark>adapter.addAll(users);</mark>
+          }, 
           t -> <mark>showError()</mark>
         );
 
 ## Threading
-{:.top120}
 
     service
         .getTopUsers()
         <mark>.subscribeOn(Schedulers.io())</mark>
         <mark>.observeOn(AndroidSchedulers.mainThread())</mark>
         .subscribe(
-          r -> adapter.addAll(r.getItems()), 
+          r -> {
+            List<User> users = r.getItems()
+            if (users.size() > 5)
+              users = users.subList(0, 5);
+            adapter.addAll(users);
+          }, 
           t -> showError()
         );
 
@@ -439,14 +467,14 @@ style: |
     Observable.just(1, 2, 3);
     Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
-    Observable.interval(1, TimeUnit.SECONDS);
+    Observable.interval(5, TimeUnit.SECONDS);
 
 ## Observable creation
 
     Observable.just(1, 2, 3);
     Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
-    Observable.interval(1, TimeUnit.SECONDS);
+    Observable.interval(5, TimeUnit.SECONDS);
     Observable.create(subscriber -> {
       try {
         subscriber.onNext(createFirstValue());
@@ -502,29 +530,50 @@ style: |
 ## map
 
     service.getTopUsers()
-      .subscribe(r -> adapter.addAll(r.getItems()));
+      .subscribe(
+        r -> {
+          List<User> users = r.getItems()
+          if (users.size() > 5)
+            users = users.subList(0, 5);
+          adapter.addAll(users);
+        }, 
+        t -> showError()
+      );
 
 ## map
 
     service.getTopUsers()
-      .subscribe(r -> adapter.addAll(r.getItems()));
-
-    service.getTopUsers()
-        <mark>.map(r -> r.getItems())</mark>
-        .subscribe(items -> adapter.addAll(items));
+      <mark>.map(r -> r.getItems())</mark>
+      .subscribe(
+        users -> {
+          if (users.size() > 5)
+            users = users.subList(0, 5);
+          adapter.addAll(users);
+        }, 
+        t -> showError()
+      );
 
 ## map
 
     service.getTopUsers()
-      .subscribe(r -> adapter.addAll(r.getItems()));
+      .map(r -> r.getItems())
+      <mark>.map(users -> users.size() > 5 ?</mark> 
+          <mark>users.subList(0, 5) : users)</mark>
+      .subscribe(
+        users -> adapter.addAll(users), 
+        t -> showError()
+      );
+
+## map
 
     service.getTopUsers()
-        .map(r -> r.getItems())
-        .subscribe(items -> adapter.addAll(items));
-
-    service.getTopUsers()
-        .map(<mark>UserResponse::getItems</mark>)
-        .subscribe(<mark>adapter::addAll</mark>);
+      .map(<mark>UserResponse::getItems</mark>)
+      .map(users -> users.size() > 5 ?
+          users.subList(0, 5) : users)
+      .subscribe(
+        <mark>adapter::addAll</mark>, 
+        t -> showError()
+      );
 
 ## zip
 
@@ -697,7 +746,7 @@ style: |
       .getTopUsers()//1<UserResponse>
       .flatMapIterable(UserResponse::getItems)//20<User>
       .limit(5)//5<User>
-      .flatMap(this::loadRepoStats)//5<UserStats>
+      .flatMap(this::loadUserStats)//5<UserStats>
 
 ## flatMap
 {:.top120}
@@ -706,9 +755,13 @@ style: |
       .getTopUsers()//1<UserResponse>
       .flatMapIterable(UserResponse::getItems)//20<User>
       .limit(5)//5<User>
-      .flatMap(this::loadRepoStats)//5<UserStats>
+      .flatMap(this::loadUserStats)//5<UserStats>
       .toList();//1<List<UserStats>>
 
+## Order is not preserved
+{:.demo}
+
+![](pictures/demoFlatMap.png)
 
 ## flatMap source code
 {:.top120}
@@ -744,8 +797,63 @@ style: |
         .getTopUsers()
         .flatMapIterable(UserResponse::getItems)
         .limit(5)
-        .<mark>concatMap</mark>(this::loadRepoStats)
+        .<mark>concatMap</mark>(this::loadUserStats)
         .toList();
+
+## timeout
+{:.top120}
+
+    service
+        .getTopUsers()
+        .flatMapIterable(UserResponse::getItems)
+        .limit(5)
+        .concatMap(this::loadRepoStats)
+        .toList()
+        .<mark>timeout(20, TimeUnit.SECONDS)</mark>;
+
+## retry
+{:.top120}
+
+    service
+        .getTopUsers()
+        .<mark>retry(2)</mark>
+        .flatMapIterable(UserResponse::getItems)
+        .limit(5)
+        .concatMap(this::loadRepoStats)
+        .toList()
+        .timeout(20, TimeUnit.SECONDS)
+        .<mark>retry(1)</mark>;
+
+## Cache
+
+    public class Cache {
+      private List<UserStats> items;
+      public void save(List<UserStats> users) {
+        items = users;
+      }
+      public Observable<List<UserStats>> load(
+          Throwable t) {
+        if (items == null)
+          return Observable.error(t);
+        else
+          return Observable.just(items);
+      }
+    }
+
+## doOnNext / onErrorResumeNext
+{:.top100}
+
+    service.getTopUsers()
+        .retry(2)
+        .flatMapIterable(UserResponse::getItems)
+        .limit(5)
+        .concatMap(this::loadRepoStats)
+        .toList()
+        .timeout(20, TimeUnit.SECONDS)
+        .retry(1)
+        .<mark>doOnNext(cache::save)</mark>
+        .<mark>onErrorResumeNext(cache::load)</mark>;
+
 
 ## Subscription
 
@@ -807,8 +915,8 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
     Observable<UserResponse> observable = 
       service.<mark>getTopUsers</mark>();
 
-    ConnectableObservable<UserResponse> replayObservable = 
-      observable.<mark>replay(1)</mark>;
+    ConnectableObservable<UserResponse> replayObservable
+      = observable.<mark>replay(1)</mark>;
 
     Subscription s1 = replayObservable.subscribe(
       System.out::println, Throwable::printStackTrace);
