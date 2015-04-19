@@ -12,31 +12,19 @@ import rx.Observable;
 
 public class Fragment7RxErrors extends BaseRxFragment<UserStats> {
 
-    private List<UserStats> cache;
+    private static Cache cache = new Cache();
 
     public Observable<List<UserStats>> loadItems() {
         return service.getTopUsers()
-                .retry(3)
+                .retry(2)
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
                 .concatMap(this::loadRepoStats)
                 .toList()
                 .timeout(20, TimeUnit.SECONDS)
-                .retry(2)
-                .doOnNext(this::saveOnCache)
-                .onErrorResumeNext(this::loadFromCache);
-    }
-
-    private void saveOnCache(List<UserStats> users) {
-        cache = users;
-    }
-
-    private Observable<List<UserStats>> loadFromCache(Throwable t) {
-        if (cache == null) {
-            return Observable.error(t);
-        } else {
-            return Observable.just(cache);
-        }
+                .retry(1)
+                .doOnNext(cache::save)
+                .onErrorResumeNext(cache::load);
     }
 
     private Observable<UserStats> loadRepoStats(User user) {
