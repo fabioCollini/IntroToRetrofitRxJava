@@ -12,6 +12,8 @@ style: |
         color:#FFF;
         text-align:center;
         font-size:70px;
+        text-shadow: 2px 2px #888888;
+        margin-top: 392px;
         }
     #Cover p {
         margin:10px 0 0;
@@ -20,9 +22,17 @@ style: |
         font-style:italic;
         font-size:20px;
         }
-        #Cover p a {
-            color:#FFF;
-            }
+    #Cover p a {
+        color:#FFF;
+        }
+    #Cover div {
+        height: 640px;
+        }
+    #cover h2 {
+    }
+    #Cover em {
+        text-shadow: 2px 2px #888888;
+    }
     #Picture h2 {
         color:#FFF;
         }
@@ -85,8 +95,6 @@ style: |
 # Introduction to Retrofit and RxJava {#Cover}
 
 *Fabio Collini*
-
-*Work in progress...*
 
 ![](pictures/cover.jpg)
 <!-- photo by John Carey, fiftyfootshadows.net -->
