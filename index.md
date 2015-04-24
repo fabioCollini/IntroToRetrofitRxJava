@@ -7,6 +7,16 @@ style: |
     @media screen .full .progress div {
       height: 6px;
     }
+    div.footer {
+      position:absolute;
+      right: 0;
+      bottom: 16px;
+      right: 16px;
+      z-index: 1;
+      font-size:15px;
+      font-family: 'PT Sans Narrow', sans-serif;
+      color: #888;
+    }
     #Cover h2 {
         margin:30px 0 0;
         color:#FFF;
@@ -93,8 +103,6 @@ style: |
 ---
 
 # Introduction to Retrofit and RxJava {#Cover}
-
-*Fabio Collini*
 
 ![](pictures/cover.jpg)
 <!-- photo by John Carey, fiftyfootshadows.net -->
