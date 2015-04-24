@@ -101,6 +101,7 @@ style: |
       color: #666666;
     }
     #13 rxJava
+    #19 map
     #25 flatMap
     #34 subscription
 ---
@@ -111,7 +112,7 @@ style: |
 <!-- photo by John Carey, fiftyfootshadows.net -->
 
 
-## Ego slide
+##Ego slide
 
 <div class="ego">
 <img style="float:right; margin-right: 40px" src="pictures/androidAvanzato.png">
@@ -126,7 +127,7 @@ style: |
 </div>
 
 
-## Retrofit
+##Retrofit
 {:.top100}
 
 - Turns your REST API into a Java interface
@@ -135,7 +136,7 @@ style: |
 - Custom converters
 - &nbsp;...
 
-## RxJava
+##RxJava
 {:.top100}
 
 <figure markdown="1">
@@ -150,14 +151,14 @@ RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library
 
 ![](pictures/rx_twitter.png)
 
-## Demo project
+##Demo project
 {:.demo}
 
 ![](pictures/demo.png)
 
 [github.com/fabioCollini/IntroToRetrofitRxJava](https://github.com/fabioCollini/IntroToRetrofitRxJava/)
 
-## HTTP request definition
+##HTTP request definition
 
     public interface StackOverflowService {
 
@@ -166,7 +167,7 @@ RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library
 
     }
 
-## HTTP request definition
+##HTTP request definition
 
     public interface StackOverflowService {
 
@@ -183,25 +184,25 @@ RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library
     }
 
 
-## Service creation
+##Service creation
 
     RestAdapter restAdapter = 
       new RestAdapter.Builder()
 
-## Service creation
+##Service creation
 
     RestAdapter restAdapter = 
       new RestAdapter.Builder()
       <mark>.setEndpoint("http://api.stackexchange.com/2.2/")</mark>
 
-## Service creation
+##Service creation
 
     <mark>RestAdapter restAdapter</mark> = 
       new RestAdapter.Builder()
       .setEndpoint("http://api.stackexchange.com/2.2/")
       <mark>.build();</mark>
 
-## Service creation
+##Service creation
 
     RestAdapter restAdapter = 
       new RestAdapter.Builder()
@@ -210,7 +211,7 @@ RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library
     <mark>StackOverflowService service = </mark>
       <mark>restAdapter.create(StackOverflowService.class);</mark>
 
-## Service creation
+##Service creation
 
     RestAdapter restAdapter = 
       new RestAdapter.Builder()
@@ -223,7 +224,7 @@ RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library
     StackOverflowService service =
       restAdapter.create(StackOverflowService.class);
 
-## Synchronous request
+##Synchronous request
 {:.top120}
 
     private List<User> loadItemsSync() {
@@ -235,7 +236,7 @@ RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library
       return users;
     }
 
-## Request parameters
+##Request parameters
 
     @GET("/users/<mark>{userId}</mark>/top-tags") 
     TagResponse getTags(@Path("userId") int <mark>userId</mark>);
@@ -243,7 +244,7 @@ RxJava is a Java VM implementation of ReactiveX (Reactive Extensions): a library
     @GET("/users/<mark>{userId}</mark>/badges") 
     BadgeResponse getBadges(@Path("userId") int <mark>userId</mark>);
 
-## Request parameters
+##Request parameters
 
     @GET("/users/{userId}/top-tags") 
     TagResponse getTags(@Path("userId") int userId);
@@ -255,7 +256,7 @@ service.getTags(<mark>12345</mark>);
 
 /users/<mark>12345</mark>/top-tags?site=stackoverflow&key=...
 
-## Other annotations
+##Other annotations
 
 - @GET, @POST, @PUT, @DELETE, @HEAD
 - @Path
@@ -266,7 +267,7 @@ service.getTags(<mark>12345</mark>);
 - @Field
 - @Headers
 
-## Composition
+##Composition
 
     List<User> users = service.<mark>getTopUsers</mark>().getItems();
     if (users.size() > 5) {
@@ -283,7 +284,7 @@ service.getTags(<mark>12345</mark>);
     }
     return statsList;
 
-## AsyncTask
+##AsyncTask
 {:.smallSize}
 
     new AsyncTask<Void, Void, List<User>>() {
@@ -305,7 +306,7 @@ service.getTags(<mark>12345</mark>);
       }
     }.execute();
 
-## Synchronous request
+##Synchronous request
 {:.top120}
 
     public interface StackOverflowService {
@@ -315,7 +316,7 @@ service.getTags(<mark>12345</mark>);
 
     }
 
-## Callbacks
+##Callbacks
 {:.top120}
 
     public interface StackOverflowService {
@@ -325,7 +326,7 @@ service.getTags(<mark>12345</mark>);
 
     }
 
-## Callbacks in action
+##Callbacks in action
 
     service.getTopUsers(new Callback<UserResponse>() {
       @Override public void success(
@@ -340,7 +341,7 @@ service.getTags(<mark>12345</mark>);
       }
     });
 
-## Callbacks in action
+##Callbacks in action
 
     service.getTopUsers(new Callback<UserResponse>() {
       @Override public void success(
@@ -355,7 +356,7 @@ service.getTags(<mark>12345</mark>);
       }
     });
 
-## Callback hell
+##Callback hell
 {:.smallSize}
 
     service.getBadges(userId, new Callback<BadgeResponse>() {
@@ -377,7 +378,7 @@ service.getTags(<mark>12345</mark>);
       }
     });
 
-## Retrofit
+##Retrofit
 {:.top120}
 
     public interface StackOverflowService {
@@ -387,7 +388,7 @@ service.getTags(<mark>12345</mark>);
 
     }
 
-## Retrofit + RxJava
+##Retrofit + RxJava
 {:.top120}
 
     public interface StackOverflowService {
@@ -397,7 +398,7 @@ service.getTags(<mark>12345</mark>);
 
     }
 
-## RxJava in action
+##RxJava in action
 
     service.<mark>getTopUsers()</mark>
       .<mark>subscribe</mark>(new Action1<UserResponse>() {
@@ -413,7 +414,7 @@ service.getTags(<mark>12345</mark>);
         }
       });
 
-## Java 8 / Retrolambda
+##Java 8 / Retrolambda
 {:.top100}
 
     service.<mark>getTopUsers()</mark>
@@ -427,7 +428,7 @@ service.getTags(<mark>12345</mark>);
           t -> <mark>showError()</mark>
         );
 
-## Threading
+##Threading
 
     service
         .getTopUsers()
@@ -443,7 +444,7 @@ service.getTags(<mark>12345</mark>);
           t -> showError()
         );
 
-## subscribe
+##subscribe
 {:.top170}
 
     public final Subscription subscribe(
@@ -452,43 +453,43 @@ service.getTags(<mark>12345</mark>);
         //...
     }
 
-## onNext | onError
+##onNext | onError
 {:.top120}
 
 ![marble](pictures/nextComplete1.png)
 
 ![marble](pictures/error1.png)
 
-## onNext* (onComplete | onError)?
+##onNext* (onComplete | onError)?
 {:.top120}
 
 ![marble](pictures/nextComplete2.png)
 
 ![marble](pictures/error2.png)
 
-## Observable creation
+##Observable creation
 
     Observable.just(1, 2, 3);
 
-## Observable creation
+##Observable creation
 
     Observable.just(1, 2, 3);
     Observable.from(Arrays.asList("A", "B", "C", "D"));
 
-## Observable creation
+##Observable creation
 
     Observable.just(1, 2, 3);
     Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
 
-## Observable creation
+##Observable creation
 
     Observable.just(1, 2, 3);
     Observable.from(Arrays.asList("A", "B", "C", "D"));
     Observable.error(new IOException());
     Observable.interval(5, TimeUnit.SECONDS);
 
-## Observable creation
+##Observable creation
 
     Observable.just(1, 2, 3);
     Observable.from(Arrays.asList("A", "B", "C", "D"));
@@ -504,7 +505,7 @@ service.getTags(<mark>12345</mark>);
       }
     });
 
-## Observable in action
+##Observable in action
 
     public Subscription subscribe(
       Action1<? super T> onNext, 
@@ -512,7 +513,7 @@ service.getTags(<mark>12345</mark>);
       Action0 onComplete
     );
 
-## Observable in action
+##Observable in action
 
     public Subscription subscribe(
       Action1<? super T> onNext, 
@@ -526,7 +527,7 @@ service.getTags(<mark>12345</mark>);
         () -> System.out.println("Completed")
       );
 
-## Observer
+##Observer
 
     Observable.just(1, 2, 3)
       .subscribe(new Observer<Integer>() {
@@ -541,12 +542,12 @@ service.getTags(<mark>12345</mark>);
           }
       });
 
-## map
+##map
 {:.top100}
 
 ![marble](pictures/map.png)
 
-## map
+##map
 
     service.getTopUsers()
       .subscribe(
@@ -559,7 +560,7 @@ service.getTags(<mark>12345</mark>);
         t -> showError()
       );
 
-## map
+##map
 
     service.getTopUsers()
       <mark>.map(r -> r.getItems())</mark>
@@ -572,7 +573,7 @@ service.getTags(<mark>12345</mark>);
         t -> showError()
       );
 
-## map
+##map
 
     service.getTopUsers()
       .map(r -> r.getItems())
@@ -583,7 +584,7 @@ service.getTags(<mark>12345</mark>);
         t -> showError()
       );
 
-## map
+##map
 
     service.getTopUsers()
       .map(<mark>UserResponse::getItems</mark>)
@@ -594,11 +595,11 @@ service.getTags(<mark>12345</mark>);
         t -> showError()
       );
 
-## zip
+##zip
 
 ![marble](pictures/zip.png)
 
-## zip
+##zip
 {:.top100}
 
     Observable.zip(
@@ -610,7 +611,7 @@ service.getTags(<mark>12345</mark>);
         <mark class="comment">  )</mark>
     );        
 
-## zip
+##zip
 {:.top100}
 
     Observable.zip(
@@ -622,7 +623,7 @@ service.getTags(<mark>12345</mark>);
         <mark class="comment">  )</mark>
     );        
 
-## zip
+##zip
 {:.top100}
 
     Observable.zip(
@@ -634,7 +635,7 @@ service.getTags(<mark>12345</mark>);
         <mark class="comment">  )</mark>
     );        
 
-## zip
+##zip
 {:.top100}
 
     Observable.zip(
@@ -646,7 +647,7 @@ service.getTags(<mark>12345</mark>);
         <mark>  )</mark>
     );        
 
-## zip
+##zip
 {:.top100}
 
     Observable.zip(
@@ -658,7 +659,7 @@ service.getTags(<mark>12345</mark>);
           )
     );        
 
-## zip
+##zip
 {:.top100}
 
     Observable.zip(
@@ -670,20 +671,20 @@ service.getTags(<mark>12345</mark>);
           new UserStats(user, tags, badges)
     );        
 
-## Multi value map
+##Multi value map
 
         Observable.just(1, 2, 3).<mark>map</mark>(
             i -> Observable.just(i * 10, i * 10 + 1)
         );
 
-## Multi value map
+##Multi value map
 
     <mark>Observable<Observable<Integer>></mark> observable =
         Observable.just(1, 2, 3).<mark>map</mark>(
             i -> Observable.just(i * 10, i * 10 + 1)
         );
 
-## Multi value map
+##Multi value map
 
     Observable<Observable<Integer>> observable =
         Observable.just(1, 2, 3).map(
@@ -694,12 +695,12 @@ service.getTags(<mark>12345</mark>);
 
     [[10, 11], [20, 21], [30, 31]]
 
-## flatMap
+##flatMap
 {:.top100}
 
 ![marble](pictures/flatMap.png)
 
-## flatMap
+##flatMap
 {:.top120}
 
     <mark>Observable<Integer></mark> observable =
@@ -711,14 +712,14 @@ service.getTags(<mark>12345</mark>);
 
     [10, 11, 20, 21, 30, 31]
 
-## flatMap
+##flatMap
 {:.top120}
 
     Observable<Profile> observable = 
       service.<mark>login</mark>(userName, password)
         .flatMap(token -> service.<mark>getProfile</mark>(token));
 
-## flatMap
+##flatMap
 {:.top120}
 
     <mark class="comment">Observable<Profile> observable = </mark>
@@ -729,13 +730,13 @@ service.getTags(<mark>12345</mark>);
       service.<mark>login</mark>(userName, password)
         .flatMap(service::<mark>getProfile</mark>);
 
-## flatMap
+##flatMap
 {:.top120}
 
     service
       .getTopUsers()//1<UserResponse>
 
-## flatMap
+##flatMap
 {:.top120}
 
     service
@@ -743,14 +744,14 @@ service.getTags(<mark>12345</mark>);
       .flatMap(r -> Observable.from(r.getItems()))
       //20<User>
 
-## flatMap
+##flatMap
 {:.top120}
 
     service
       .getTopUsers()//1<UserResponse>
       .flatMapIterable(UserResponse::getItems)//20<User>
 
-## flatMap
+##flatMap
 {:.top120}
 
     service
@@ -758,7 +759,7 @@ service.getTags(<mark>12345</mark>);
       .flatMapIterable(UserResponse::getItems)//20<User>
       .limit(5)//5<User>
 
-## flatMap
+##flatMap
 {:.top120}
 
     service
@@ -767,7 +768,7 @@ service.getTags(<mark>12345</mark>);
       .limit(5)//5<User>
       .flatMap(this::loadUserStats)//5<UserStats>
 
-## flatMap
+##flatMap
 {:.top120}
 
     service
@@ -777,12 +778,12 @@ service.getTags(<mark>12345</mark>);
       .flatMap(this::loadUserStats)//5<UserStats>
       .toList();//1<List<UserStats>>
 
-## Order is not preserved
+##Order is not preserved
 {:.demo}
 
 ![](pictures/demoFlatMap.png)
 
-## flatMap source code
+##flatMap source code
 {:.top120}
 
     public final <R> Observable<R> flatMap(
@@ -793,12 +794,12 @@ service.getTags(<mark>12345</mark>);
       <mark>return merge(map(func));</mark>
     }
 
-## concatMap
+##concatMap
 {:.top100}
 
 ![marble](pictures/concatMap.png)
 
-## concatMap source code
+##concatMap source code
 {:.top120}
 
     public final <R> Observable<R> concatMap(
@@ -809,7 +810,7 @@ service.getTags(<mark>12345</mark>);
         <mark>return concat(map(func));</mark>
     }
 
-## concatMap
+##concatMap
 {:.top120}
 
     service
@@ -819,7 +820,7 @@ service.getTags(<mark>12345</mark>);
         .<mark>concatMap</mark>(this::loadUserStats)
         .toList();
 
-## timeout
+##timeout
 {:.top120}
 
     service
@@ -830,7 +831,7 @@ service.getTags(<mark>12345</mark>);
         .toList()
         .<mark>timeout(20, TimeUnit.SECONDS)</mark>;
 
-## retry
+##retry
 {:.top120}
 
     service
@@ -843,7 +844,7 @@ service.getTags(<mark>12345</mark>);
         .timeout(20, TimeUnit.SECONDS)
         .<mark>retry(1)</mark>;
 
-## Cache
+##Cache
 
     public class Cache {
       private List<UserStats> items;
@@ -859,7 +860,7 @@ service.getTags(<mark>12345</mark>);
       }
     }
 
-## doOnNext / onErrorResumeNext
+##doOnNext / onErrorResumeNext
 {:.top100}
 
     service.getTopUsers()
@@ -874,14 +875,14 @@ service.getTags(<mark>12345</mark>);
         .<mark>onErrorResumeNext(cache::load)</mark>;
 
 
-## Subscription
+##Subscription
 
     Observable
       .<mark>interval</mark>(1, TimeUnit.SECONDS)
       .timestamp()
       .subscribe(System.out::println);
 
-## Subscription
+##Subscription
 
     Subscription <mark>subscription</mark> = Observable
       .interval(1, TimeUnit.SECONDS)
@@ -892,7 +893,7 @@ service.getTags(<mark>12345</mark>);
 
     subscription.<mark>unsubscribe</mark>();
 
-## Subscription
+##Subscription
 
     Subscription subscription = Observable
       .interval(1, TimeUnit.SECONDS)
@@ -906,7 +907,7 @@ service.getTags(<mark>12345</mark>);
 Timestamped(timestampMillis = 142936040<mark>6</mark>807, value = <mark>0</mark>)
 Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>)
 
-## How many requests?
+##How many requests?
 
     Observable<UserResponse> observable = 
       service.<mark>getTopUsers</mark>();
@@ -916,7 +917,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
     Subscription s2 = observable.<mark>subscribe</mark>(
       System.out::println, Throwable::printStackTrace);
 
-## How many requests?
+##How many requests?
 
     Observable<UserResponse> observable = 
       service.<mark>getTopUsers</mark>();
@@ -929,7 +930,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
 - 2 requests
 - Retrofit Observables are <mark>cold</mark>
 
-## Hot observables
+##Hot observables
 
     Observable<UserResponse> observable = 
       service.<mark>getTopUsers</mark>();
@@ -945,7 +946,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
     Subscription s3 = replayObservable.<mark>connect</mark>();
 
 
-## Activity lifecycle
+##Activity lifecycle
 
     @Override public View onCreateView(...) {
       ...
@@ -961,7 +962,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
       ...
     }
 
-## Activity lifecycle
+##Activity lifecycle
 
     @Override public void <mark>onResume</mark>() {
       super.onResume();
@@ -977,7 +978,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
       subscription.<mark>unsubscribe</mark>();
     }
 
-## RetainedFragment
+##RetainedFragment
 {:.smallSize}
 
     public class RetainedFragment<T> extends Fragment {
@@ -999,7 +1000,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
       }
     }    
 
-## RetainedFragment
+##RetainedFragment
 {:.smallSize}
 
     public class RetainedFragment<T> extends Fragment {
@@ -1021,7 +1022,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
       }
     }    
 
-## RetainedFragment
+##RetainedFragment
 {:.smallSize}
 
     public class RetainedFragment<T> extends Fragment {
@@ -1043,7 +1044,7 @@ Timestamped(timestampMillis = 142936040<mark>7</mark>805, value = <mark>1</mark>
       }
     }    
 
-## Thanks for your attention!
+##Thanks for your attention!
 
 <div class="ego">
 <img style="float:right; margin-right: -20px" src="pictures/androidAvanzato.png">
