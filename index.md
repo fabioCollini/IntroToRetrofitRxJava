@@ -108,6 +108,8 @@ style: |
 
 # Introduction to Retrofit and RxJava {#Cover}
 
+*AppDays 2015 Pordenone*
+
 ![](pictures/cover.jpg)
 <!-- photo by John Carey, fiftyfootshadows.net -->
 
@@ -119,6 +121,7 @@ style: |
 <div><img src="pictures/twitter.png"><a href="https://twitter.com/fabioCollini">@fabioCollini</a></div>
 <div><img src="pictures/linkedin.png"><a href="http://linkedin.com/in/fabiocollini">linkedin.com/in/fabiocollini</a></div>
 <div><img src="pictures/folderorganizer.png"><a href="http://www.folderorganizer.net/">Folder Organizer</a></div>
+<div><img src="pictures/gdg.png"><a href="http://www.gdg-firenze.info/">GDG Firenze</a></div>
 <div><img src="pictures/cosenonjaviste.png"><a href="http://www.cosenonjaviste.it">cosenonjaviste.it</a></div>
 <div><img src="pictures/nanabianca.png"><a href="http://nanabianca.it/">nana bianca</a></div>
 <div><img src="pictures/freapp.png"><a href="http://freapp.com/">Freapp</a></div>
