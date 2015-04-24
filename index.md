@@ -17,6 +17,9 @@ style: |
       font-family: 'PT Sans Narrow', sans-serif;
       color: #888;
     }
+    div.footer a {
+      color: #888;
+    }
     #Cover h2 {
         margin:30px 0 0;
         color:#FFF;
