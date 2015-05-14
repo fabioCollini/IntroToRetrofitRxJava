@@ -19,7 +19,7 @@ public class Fragment7RxErrors extends BaseRxFragment<UserStats> {
                 .retry(2)
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
-                .concatMap(this::loadRepoStats)
+                .concatMap(this::loadUserStats)
                 .toList()
                 .timeout(20, TimeUnit.SECONDS)
                 .retry(1)
@@ -27,7 +27,7 @@ public class Fragment7RxErrors extends BaseRxFragment<UserStats> {
                 .onErrorResumeNext(cache::load);
     }
 
-    private Observable<UserStats> loadRepoStats(User user) {
+    private Observable<UserStats> loadUserStats(User user) {
         return Observable.zip(
                 service.getTags(user.getId()).retry(3).map(TagResponse::getItems),
                 service.getBadges(user.getId()).retry(3).map(BadgeResponse::getItems),

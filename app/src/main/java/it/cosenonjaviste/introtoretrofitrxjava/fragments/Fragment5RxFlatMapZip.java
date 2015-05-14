@@ -13,11 +13,11 @@ public class Fragment5RxFlatMapZip extends BaseRxFragment<UserStats> {
         return service.getTopUsers()
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
-                .flatMap(this::loadRepoStats)
+                .flatMap(this::loadUserStats)
                 .toList();
     }
 
-    private Observable<UserStats> loadRepoStats(User user) {
+    private Observable<UserStats> loadUserStats(User user) {
         return Observable.zip(
                 service.getTags(user.getId()),
                 service.getBadges(user.getId()),

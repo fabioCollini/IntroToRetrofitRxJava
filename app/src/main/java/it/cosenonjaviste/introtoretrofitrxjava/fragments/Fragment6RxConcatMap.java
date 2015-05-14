@@ -15,11 +15,11 @@ public class Fragment6RxConcatMap extends BaseRxFragment<UserStats> {
         return service.getTopUsers()
                 .flatMapIterable(UserResponse::getItems)
                 .limit(5)
-                .concatMap(this::loadRepoStats)
+                .concatMap(this::loadUserStats)
                 .toList();
     }
 
-    private Observable<UserStats> loadRepoStats(User user) {
+    private Observable<UserStats> loadUserStats(User user) {
         return Observable.zip(
                 service.getTags(user.getId()).map(TagResponse::getItems),
                 service.getBadges(user.getId()).map(BadgeResponse::getItems),
